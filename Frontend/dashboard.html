@@ -3,50 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administrasi Desa</title>
+    <title>Administrasi Desa Legok</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Header seperti di berdesa.id -->
     <header>
-        <h1>Dashboard Administrasi Desa [Nama Desa]</h1>
+        <div class="header-container">
+            <div class="logo">
+                <img src="logo.png" alt="Logo Desa"> <!-- Ganti dengan logo asli -->
+                <h1>Desa Legok</h1>
+            </div>
+            <nav>
+                <a href="#dashboard">Beranda</a>
+                <a href="#info">Informasi Desa</a>
+                <a href="#surat">Surat Online</a>
+                <a href="#pengaduan">Pengaduan</a>
+                <a href="#berita">Berita</a>
+            </nav>
+        </div>
     </header>
 
+    <!-- Slider/Banner seperti di berdesa.id -->
+    <section class="slider">
+        <div class="slide active">
+            <img src="Kantor_Desa_Legok,_Kabupaten_Tangerang.jpg" alt="Banner 1">
+            <div class="slide-text">
+                <h2>Selamat Datang di Desa Legok</h2>
+                <p>Website resmi administrasi desa untuk layanan masyarakat.</p>
+            </div>
+        </div>
+        <div class="slide">
+            <img src="https://via.placeholder.com/1200x400?text=Pembangunan+Infrastruktur" alt="Banner 2">
+            <div class="slide-text">
+                <h2>Pembangunan Infrastruktur</h2>
+                <p>Update terbaru tentang proyek desa.</p>
+            </div>
+        </div>
+        <!-- Tambah slide lebih banyak jika perlu -->
+        <button class="prev" onclick="changeSlide(-1)">&#10094;</button>
+        <button class="next" onclick="changeSlide(1)">&#10095;</button>
+    </section>
+
     <!-- Dashboard dengan Pilihan Fitur -->
-    <section id="dashboard">
-        <h2>Pilih Fitur Layanan</h2>
-        <div class="fitur-container">
-            <button onclick="scrollToSection('info')">Informasi Desa</button>
-            <button onclick="scrollToSection('surat')">Buat Surat Online</button>
-            <button onclick="scrollToSection('pengaduan')">Pengaduan Masyarakat</button>
+    <section id="dashboard" class="dashboard">
+        <h2>Layanan Masyarakat</h2>
+        <div class="fitur-grid">
+            <div class="fitur-item">
+                <button onclick="scrollToSection('info')">Informasi Desa</button>
+                <p>Dapatkan informasi lengkap tentang desa kami.</p>
+            </div>
+            <div class="fitur-item">
+                <button onclick="scrollToSection('surat')">Buat Surat Online</button>
+                <p>Ajukan surat keterangan, domisili, dan lainnya secara online.</p>
+            </div>
+            <div class="fitur-item">
+                <button onclick="scrollToSection('pengaduan')">Pengaduan Masyarakat</button>
+                <p>Kirim pengaduan atau saran untuk kemajuan desa.</p>
+            </div>
         </div>
     </section>
 
-    <!-- Berita Desa di Bawah Dashboard -->
-    <section id="berita">
+    <!-- Berita Desa -->
+    <section id="berita" class="berita">
         <h2>Berita Desa</h2>
-        <article>
-            <h3>Berita 1: Pembangunan Jalan Desa</h3>
-            <p>Desa [Nama Desa] sedang melakukan pembangunan jalan utama. Proyek ini diperkirakan selesai dalam 3 bulan.</p>
-            <small>Tanggal: 1 Oktober 2023</small>
-        </article>
-        <article>
-            <h3>Berita 2: Kegiatan Gotong Royong</h3>
-            <p>Masyarakat desa mengadakan gotong royong membersihkan lingkungan pada hari Minggu.</p>
-            <small>Tanggal: 15 September 2023</small>
-        </article>
-        <!-- Tambahkan lebih banyak berita di sini -->
+        <div class="berita-grid">
+            <article>
+                <img src="https://via.placeholder.com/300x200?text=Berita+1" alt="Berita 1">
+                <h3>Pembangunan Jalan Desa</h3>
+                <p>Desa Legok sedang melakukan pembangunan jalan utama. Proyek ini diperkirakan selesai dalam 3 bulan.</p>
+                <small>Tanggal: 1 Oktober 2023</small>
+            </article>
+            <article>
+                <img src="https://via.placeholder.com/300x200?text=Berita+2" alt="Berita 2">
+                <h3>Kegiatan Gotong Royong</h3>
+                <p>Masyarakat desa mengadakan gotong royong membersihkan lingkungan pada hari Minggu.</p>
+                <small>Tanggal: 15 September 2023</small>
+            </article>
+            <!-- Tambah lebih banyak berita -->
+        </div>
     </section>
 
     <!-- Fitur Informasi Desa -->
-    <section id="info">
+    <section id="info" class="content-section">
         <h2>Informasi Desa</h2>
-        <p>Desa [Nama Desa] terletak di [Lokasi]. Populasi: [Jumlah]. Kepala Desa: [Nama].</p>
+        <p>Desa Legok terletak di [Lokasi]. Populasi: [Jumlah]. Kepala Desa: [Nama].</p>
         <p>Informasi tambahan: [Tambahkan detail seperti sejarah, struktur pemerintahan, dll.].</p>
-        <!-- Tambahkan gambar atau peta -->
     </section>
 
     <!-- Fitur Form Surat Online -->
-    <section id="surat">
+    <section id="surat" class="content-section">
         <h2>Form Pembuatan Surat Online</h2>
         <form id="suratForm">
             <label for="nama">Nama Lengkap:</label>
@@ -68,7 +114,7 @@
     </section>
 
     <!-- Fitur Pengaduan Masyarakat -->
-    <section id="pengaduan">
+    <section id="pengaduan" class="content-section">
         <h2>Pengaduan Masyarakat</h2>
         <form id="pengaduanForm">
             <label for="namaPengadu">Nama:</label>
@@ -85,8 +131,15 @@
         <div id="pengaduanOutput"></div>
     </section>
 
+    <!-- Footer seperti di berdesa.id -->
     <footer>
-        <p>&copy; 2023 Administrasi Desa [Nama Desa]. Semua hak dilindungi.</p>
+        <div class="footer-container">
+            <p>&copy; 2023 Desa Legok. Semua hak dilindungi.</p>
+            <p>Alamat: [Alamat Desa] | Email: info@legok.berdesa.id | Telepon: [Nomor]</p>
+            <div class="social-links">
+                <a href="#">Facebook</a> | <a href="#">Instagram</a>
+            </div>
+        </div>
     </footer>
 
     <script src="script.js"></script>
