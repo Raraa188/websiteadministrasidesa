@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrasi Desa</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Dashboard Administrasi Desa [Nama Desa]</h1>
+    </header>
+
+    <!-- Dashboard dengan Pilihan Fitur -->
+    <section id="dashboard">
+        <h2>Pilih Fitur Layanan</h2>
+        <div class="fitur-container">
+            <button onclick="scrollToSection('info')">Informasi Desa</button>
+            <button onclick="scrollToSection('surat')">Buat Surat Online</button>
+            <button onclick="scrollToSection('pengaduan')">Pengaduan Masyarakat</button>
+        </div>
+    </section>
+
+    <!-- Berita Desa di Bawah Dashboard -->
+    <section id="berita">
+        <h2>Berita Desa</h2>
+        <article>
+            <h3>Berita 1: Pembangunan Jalan Desa</h3>
+            <p>Desa [Nama Desa] sedang melakukan pembangunan jalan utama. Proyek ini diperkirakan selesai dalam 3 bulan.</p>
+            <small>Tanggal: 1 Oktober 2023</small>
+        </article>
+        <article>
+            <h3>Berita 2: Kegiatan Gotong Royong</h3>
+            <p>Masyarakat desa mengadakan gotong royong membersihkan lingkungan pada hari Minggu.</p>
+            <small>Tanggal: 15 September 2023</small>
+        </article>
+        <!-- Tambahkan lebih banyak berita di sini -->
+    </section>
+
+    <!-- Fitur Informasi Desa -->
+    <section id="info">
+        <h2>Informasi Desa</h2>
+        <p>Desa [Nama Desa] terletak di [Lokasi]. Populasi: [Jumlah]. Kepala Desa: [Nama].</p>
+        <p>Informasi tambahan: [Tambahkan detail seperti sejarah, struktur pemerintahan, dll.].</p>
+        <!-- Tambahkan gambar atau peta -->
+    </section>
+
+    <!-- Fitur Form Surat Online -->
+    <section id="surat">
+        <h2>Form Pembuatan Surat Online</h2>
+        <form id="suratForm">
+            <label for="nama">Nama Lengkap:</label>
+            <input type="text" id="nama" required><br>
+            
+            <label for="jenisSurat">Jenis Surat:</label>
+            <select id="jenisSurat">
+                <option value="surat-keterangan">Surat Keterangan</option>
+                <option value="surat-domisili">Surat Domisili</option>
+                <option value="surat-izin">Surat Izin</option>
+            </select><br>
+            
+            <label for="alamat">Alamat:</label>
+            <textarea id="alamat" required></textarea><br>
+            
+            <button type="submit">Buat Surat</button>
+        </form>
+        <div id="suratOutput"></div>
+    </section>
+
+    <!-- Fitur Pengaduan Masyarakat -->
+    <section id="pengaduan">
+        <h2>Pengaduan Masyarakat</h2>
+        <form id="pengaduanForm">
+            <label for="namaPengadu">Nama:</label>
+            <input type="text" id="namaPengadu" required><br>
+            
+            <label for="email">Email:</label>
+            <input type="email" id="email" required><br>
+            
+            <label for="isiPengaduan">Isi Pengaduan:</label>
+            <textarea id="isiPengaduan" required></textarea><br>
+            
+            <button type="submit">Kirim Pengaduan</button>
+        </form>
+        <div id="pengaduanOutput"></div>
+    </section>
+
+    <footer>
+        <p>&copy; 2023 Administrasi Desa [Nama Desa]. Semua hak dilindungi.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
