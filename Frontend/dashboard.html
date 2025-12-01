@@ -1,147 +1,309 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administrasi Desa Legok</title>
-    <link rel="stylesheet" href="style.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Poppins', 'sans-serif'] },
+                    colors: {
+                        desa: {
+                            main: '#1e5631',   /* Hijau Tua Elegan */
+                            light: '#4ade80',  /* Hijau Terang */
+                            bg: '#f0fdf4',     /* Background Tipis */
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
-    <!-- Header seperti di berdesa.id -->
-    <header>
-        <div class="header-container">
-            <div class="logo">
-                <img src="logo.png" alt="Logo Desa"> <!-- Ganti dengan logo asli -->
-                <h1>Desa Legok</h1>
-            </div>
-            <nav>
-                <a href="#dashboard">Beranda</a>
-                <a href="#info">Informasi Desa</a>
-                <a href="#surat">Surat Online</a>
-                <a href="#pengaduan">Pengaduan</a>
-                <a href="#berita">Berita</a>
-            </nav>
-        </div>
-    </header>
+<body class="bg-gray-50 text-gray-800">
 
-    <!-- Slider/Banner seperti di berdesa.id -->
-    <section class="slider">
-        <div class="slide active">
-            <img src="Kantor_Desa_Legok,_Kabupaten_Tangerang.jpg" alt="Banner 1">
-            <div class="slide-text">
-                <h2>Selamat Datang di Desa Legok</h2>
-                <p>Website resmi administrasi desa untuk layanan masyarakat.</p>
+    <nav class="bg-desa-main text-white sticky top-0 z-50 shadow-lg backdrop-blur-md bg-opacity-95">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <img src="logo.png" alt="Logo" class="w-10 h-10 bg-white rounded-full p-0.5 shadow-md">
+                <div>
+                    <h1 class="text-lg font-bold leading-tight">Desa Legok</h1>
+                    <p class="text-[10px] opacity-80 font-light tracking-wider">KABUPATEN TANGERANG</p>
+                </div>
             </div>
-        </div>
-        <div class="slide">
-            <img src="https://via.placeholder.com/1200x400?text=Pembangunan+Infrastruktur" alt="Banner 2">
-            <div class="slide-text">
-                <h2>Pembangunan Infrastruktur</h2>
-                <p>Update terbaru tentang proyek desa.</p>
-            </div>
-        </div>
-        <!-- Tambah slide lebih banyak jika perlu -->
-        <button class="prev" onclick="changeSlide(-1)">&#10094;</button>
-        <button class="next" onclick="changeSlide(1)">&#10095;</button>
-    </section>
 
-    <!-- Dashboard dengan Pilihan Fitur -->
-    <section id="dashboard" class="dashboard">
-        <h2>Layanan Masyarakat</h2>
-        <div class="fitur-grid">
-            <div class="fitur-item">
-                <button onclick="scrollToSection('info')">Informasi Desa</button>
-                <p>Dapatkan informasi lengkap tentang desa kami.</p>
+            <div class="hidden md:flex space-x-6 text-sm font-medium">
+                <a href="#beranda" class="hover:text-desa-light transition">Beranda</a>
+                <a href="#layanan" class="hover:text-desa-light transition">Layanan</a>
+                <a href="#berita" class="hover:text-desa-light transition">Berita</a>
+                <a href="#kontak-wa" class="bg-white text-desa-main px-4 py-1.5 rounded-full hover:bg-gray-100 transition shadow-sm">
+                    <i class="fab fa-whatsapp mr-1"></i> Kontak
+                </a>
             </div>
-            <div class="fitur-item">
-                <button onclick="scrollToSection('surat')">Buat Surat Online</button>
-                <p>Ajukan surat keterangan, domisili, dan lainnya secara online.</p>
-            </div>
-            <div class="fitur-item">
-                <button onclick="scrollToSection('pengaduan')">Pengaduan Masyarakat</button>
-                <p>Kirim pengaduan atau saran untuk kemajuan desa.</p>
+
+            <button class="md:hidden text-2xl focus:outline-none">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <section id="beranda" class="relative h-[500px] flex items-center justify-center text-white overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <img src="Kantor_Desa_Legok,_Kabupaten_Tangerang.jpg" alt="Kantor Desa" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-desa-main/90 via-desa-main/60 to-black/30"></div>
+        </div>
+
+        <div class="relative z-10 text-center px-4 max-w-3xl">
+            <span class="bg-desa-light/20 border border-desa-light/50 text-desa-light px-4 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-4 inline-block backdrop-blur-sm">
+                Pelayanan Digital
+            </span>
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 leading-tight shadow-sm">
+                Selamat Datang di <br> Sistem Administrasi Desa Legok
+            </h1>
+            <p class="text-gray-200 mb-8 text-sm md:text-base">
+                Wujudkan desa yang mandiri, transparan, dan melayani dengan sepenuh hati melalui platform digital terpadu.
+            </p>
+            <div class="flex flex-col md:flex-row justify-center gap-4">
+                <a href="#layanan" class="bg-desa-light text-desa-main font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-green-400 transition transform hover:-translate-y-1">
+                    Mulai Layanan
+                </a>
+                <a href="#kontak-wa" class="bg-white/10 backdrop-blur-sm border border-white text-white font-semibold py-3 px-8 rounded-xl hover:bg-white/20 transition">
+                    Hubungi Kami
+                </a>
             </div>
         </div>
-    </section>
-
-    <!-- Berita Desa -->
-    <section id="berita" class="berita">
-        <h2>Berita Desa</h2>
-        <div class="berita-grid">
-            <article>
-                <img src="https://via.placeholder.com/300x200?text=Berita+1" alt="Berita 1">
-                <h3>Pembangunan Jalan Desa</h3>
-                <p>Desa Legok sedang melakukan pembangunan jalan utama. Proyek ini diperkirakan selesai dalam 3 bulan.</p>
-                <small>Tanggal: 1 Oktober 2023</small>
-            </article>
-            <article>
-                <img src="https://via.placeholder.com/300x200?text=Berita+2" alt="Berita 2">
-                <h3>Kegiatan Gotong Royong</h3>
-                <p>Masyarakat desa mengadakan gotong royong membersihkan lingkungan pada hari Minggu.</p>
-                <small>Tanggal: 15 September 2023</small>
-            </article>
-            <!-- Tambah lebih banyak berita -->
+        
+        <div class="absolute bottom-0 w-full overflow-hidden leading-none">
+            <svg class="relative block w-[calc(100%+1.3px)] h-[60px]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="fill-gray-50"></path>
+            </svg>
         </div>
     </section>
 
-    <!-- Fitur Informasi Desa -->
-    <section id="info" class="content-section">
-        <h2>Informasi Desa</h2>
-        <p>Desa Legok terletak di [Lokasi]. Populasi: [Jumlah]. Kepala Desa: [Nama].</p>
-        <p>Informasi tambahan: [Tambahkan detail seperti sejarah, struktur pemerintahan, dll.].</p>
-    </section>
+    <div class="container mx-auto px-6 -mt-16 relative z-20 mb-16">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-2xl shadow-xl border-b-4 border-desa-main flex items-center gap-4 hover:shadow-2xl transition">
+                <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center text-desa-main text-2xl">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-800">12.500+</h3>
+                    <p class="text-xs text-gray-500">Jumlah Penduduk</p>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-xl border-b-4 border-yellow-500 flex items-center gap-4 hover:shadow-2xl transition">
+                <div class="w-14 h-14 bg-yellow-100 rounded-full flex items-center justify-center text-yellow-600 text-2xl">
+                    <i class="fas fa-map-marked-alt"></i>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-800">8 RW</h3>
+                    <p class="text-xs text-gray-500">Wilayah Administratif</p>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-xl border-b-4 border-blue-500 flex items-center gap-4 hover:shadow-2xl transition">
+                <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-2xl">
+                    <i class="fas fa-hand-holding-heart"></i>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-800">24 Jam</h3>
+                    <p class="text-xs text-gray-500">Siap Melayani</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <!-- Fitur Form Surat Online -->
-    <section id="surat" class="content-section">
-        <h2>Form Pembuatan Surat Online</h2>
-        <form id="suratForm">
-            <label for="nama">Nama Lengkap:</label>
-            <input type="text" id="nama" required><br>
+    <main class="container mx-auto px-6 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
             
-            <label for="jenisSurat">Jenis Surat:</label>
-            <select id="jenisSurat">
-                <option value="surat-keterangan">Surat Keterangan</option>
-                <option value="surat-domisili">Surat Domisili</option>
-                <option value="surat-izin">Surat Izin</option>
-            </select><br>
-            
-            <label for="alamat">Alamat:</label>
-            <textarea id="alamat" required></textarea><br>
-            
-            <button type="submit">Buat Surat</button>
-        </form>
-        <div id="suratOutput"></div>
-    </section>
+            <div class="lg:col-span-2 space-y-12">
+                
+                <section id="layanan">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-1 h-8 bg-desa-main rounded-full"></div>
+                        <h2 class="text-2xl font-bold text-gray-800">Layanan Mandiri</h2>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div onclick="toggleForm('surat')" class="group cursor-pointer bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition border border-gray-100 hover:border-desa-main">
+                            <i class="fas fa-envelope-open-text text-3xl text-desa-main mb-3 group-hover:scale-110 transition duration-300"></i>
+                            <h3 class="font-bold text-gray-800 group-hover:text-desa-main">Buat Surat Online</h3>
+                            <p class="text-xs text-gray-500 mt-1">SKTM, Domisili, Pengantar, dll.</p>
+                        </div>
+                        <div onclick="toggleForm('pengaduan')" class="group cursor-pointer bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition border border-gray-100 hover:border-red-500">
+                            <i class="fas fa-bullhorn text-3xl text-red-500 mb-3 group-hover:scale-110 transition duration-300"></i>
+                            <h3 class="font-bold text-gray-800 group-hover:text-red-500">Lapor / Pengaduan</h3>
+                            <p class="text-xs text-gray-500 mt-1">Sampaikan aspirasi anda.</p>
+                        </div>
+                    </div>
 
-    <!-- Fitur Pengaduan Masyarakat -->
-    <section id="pengaduan" class="content-section">
-        <h2>Pengaduan Masyarakat</h2>
-        <form id="pengaduanForm">
-            <label for="namaPengadu">Nama:</label>
-            <input type="text" id="namaPengadu" required><br>
-            
-            <label for="email">Email:</label>
-            <input type="email" id="email" required><br>
-            
-            <label for="isiPengaduan">Isi Pengaduan:</label>
-            <textarea id="isiPengaduan" required></textarea><br>
-            
-            <button type="submit">Kirim Pengaduan</button>
-        </form>
-        <div id="pengaduanOutput"></div>
-    </section>
+                    <div id="form-surat" class="hidden mt-6 bg-white p-8 rounded-2xl shadow-lg border-t-4 border-desa-main animation-fade">
+                        <h3 class="text-xl font-bold mb-4 flex items-center gap-2"><i class="fas fa-file-alt text-desa-main"></i> Form Surat</h3>
+                        <form class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">NIK</label>
+                                    <input type="number" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-desa-main focus:outline-none text-sm bg-gray-50" placeholder="Nomor Induk Kependudukan">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-600 mb-1">Nama Lengkap</label>
+                                    <input type="text" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-desa-main focus:outline-none text-sm bg-gray-50" placeholder="Sesuai KTP">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Jenis Surat</label>
+                                <select class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-desa-main focus:outline-none text-sm bg-gray-50">
+                                    <option>Surat Keterangan Usaha</option>
+                                    <option>Surat Keterangan Domisili</option>
+                                    <option>Surat Keterangan Tidak Mampu</option>
+                                </select>
+                            </div>
+                            <button class="w-full bg-desa-main text-white font-bold py-2.5 rounded-lg hover:bg-green-800 transition shadow-md">Kirim Permohonan</button>
+                        </form>
+                    </div>
 
-    <!-- Footer seperti di berdesa.id -->
-    <footer>
-        <div class="footer-container">
-            <p>&copy; 2023 Desa Legok. Semua hak dilindungi.</p>
-            <p>Alamat: [Alamat Desa] | Email: info@legok.berdesa.id | Telepon: [Nomor]</p>
-            <div class="social-links">
-                <a href="#">Facebook</a> | <a href="#">Instagram</a>
+                    <div id="form-pengaduan" class="hidden mt-6 bg-white p-8 rounded-2xl shadow-lg border-t-4 border-red-500 animation-fade">
+                        <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-red-600"><i class="fas fa-exclamation-circle"></i> Form Pengaduan</h3>
+                        <form class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Judul Laporan</label>
+                                <input type="text" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none text-sm bg-gray-50" placeholder="Contoh: Jalan Rusak di RT 01">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Deskripsi</label>
+                                <textarea rows="3" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-500 focus:outline-none text-sm bg-gray-50"></textarea>
+                            </div>
+                            <button class="w-full bg-red-600 text-white font-bold py-2.5 rounded-lg hover:bg-red-700 transition shadow-md">Kirim Laporan</button>
+                        </form>
+                    </div>
+                </section>
+
+                <section id="berita">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-1 h-8 bg-desa-main rounded-full"></div>
+                        <h2 class="text-2xl font-bold text-gray-800">Kabar Desa</h2>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex flex-col md:flex-row bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition">
+                            <div class="w-full md:w-48 h-48 md:h-auto bg-gray-200">
+                                <img src="https://source.unsplash.com/random/400x300/?village,meeting" alt="Berita" class="w-full h-full object-cover">
+                            </div>
+                            <div class="p-5 flex flex-col justify-center">
+                                <div class="flex items-center gap-2 text-[10px] text-gray-500 mb-2">
+                                    <span><i class="far fa-calendar-alt"></i> 12 Okt 2023</span>
+                                    <span>•</span>
+                                    <span class="text-desa-main font-semibold">Pembangunan</span>
+                                </div>
+                                <h3 class="font-bold text-lg text-gray-800 mb-2 leading-tight">Musyawarah Perencanaan Pembangunan Desa Tahun 2024</h3>
+                                <p class="text-sm text-gray-600 line-clamp-2">Kegiatan musyawarah desa membahas prioritas penggunaan dana desa untuk tahun anggaran mendatang...</p>
+                                <a href="#" class="text-desa-main text-sm font-semibold mt-3 hover:underline">Baca Selengkapnya &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <aside class="space-y-8">
+                
+                <div id="kontak-wa" class="bg-gradient-to-br from-green-600 to-teal-700 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-10 -mt-10"></div>
+                    
+                    <div class="text-center relative z-10">
+                        <h3 class="text-xl font-bold mb-1">Hubungi Admin</h3>
+                        <p class="text-xs text-green-100 mb-4">Scan QR atau klik tombol di bawah</p>
+                        
+                        <div class="bg-white p-3 rounded-xl w-40 h-40 mx-auto shadow-lg mb-4 flex items-center justify-center transform group-hover:scale-105 transition duration-300">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://wa.me/6281234567890" alt="QR WhatsApp" class="w-full h-full">
+                        </div>
+
+                        <a href="https://wa.me/6281234567890" target="_blank" class="flex items-center justify-center gap-2 w-full bg-white text-green-700 font-bold py-3 rounded-xl hover:bg-green-50 transition shadow-md">
+                            <i class="fab fa-whatsapp text-xl"></i> Chat WhatsApp
+                        </a>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+                    <h4 class="font-bold text-gray-800 mb-4 pb-2 border-b">Jam Operasional</h4>
+                    <ul class="space-y-3 text-sm text-gray-600">
+                        <li class="flex justify-between">
+                            <span>Senin - Kamis</span>
+                            <span class="font-semibold text-gray-800">08:00 - 15:00</span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span>Jumat</span>
+                            <span class="font-semibold text-gray-800">08:00 - 11:00</span>
+                        </li>
+                        <li class="flex justify-between">
+                            <span class="text-red-500">Sabtu - Minggu</span>
+                            <span class="font-semibold text-red-500">Libur</span>
+                        </li>
+                    </ul>
+                </div>
+
+            </aside>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white pt-12 pb-6 mt-12">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                <div>
+                    <h3 class="font-bold text-xl mb-4">Desa Legok</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Mewujudkan tata kelola pemerintahan desa yang baik, bersih, dan transparan.</p>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Kontak</h3>
+                    <ul class="text-gray-400 text-sm space-y-2">
+                        <li><i class="fas fa-map-marker-alt w-5"></i> Jl. Raya Legok No. 123</li>
+                        <li><i class="fas fa-phone w-5"></i> (021) 598-xxxx</li>
+                        <li><i class="fas fa-envelope w-5"></i> admin@desalegok.id</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg mb-4">Tautan</h3>
+                    <ul class="text-gray-400 text-sm space-y-2">
+                        <li><a href="#" class="hover:text-white">Kabupaten Tangerang</a></li>
+                        <li><a href="#" class="hover:text-white">Kemensos</a></li>
+                        <li><a href="#" class="hover:text-white">Cek Bansos</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 pt-6 text-center text-xs text-gray-500">
+                &copy; 2023 Pemerintah Desa Legok. All rights reserved.
             </div>
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <script>
+        // Fungsi untuk menampilkan/menyembunyikan form
+        function toggleForm(id) {
+            const formSurat = document.getElementById('form-surat');
+            const formAduan = document.getElementById('form-pengaduan');
+
+            if (id === 'surat') {
+                formSurat.classList.toggle('hidden');
+                formAduan.classList.add('hidden'); // Tutup yang lain
+            } else if (id === 'pengaduan') {
+                formAduan.classList.toggle('hidden');
+                formSurat.classList.add('hidden'); // Tutup yang lain
+            }
+        }
+    </script>
+
+    <style>
+        /* Animasi muncul pelan */
+        .animation-fade { animation: fadeIn 0.5s; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </body>
 </html>
