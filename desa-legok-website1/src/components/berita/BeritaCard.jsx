@@ -1,35 +1,45 @@
-export default function BeritaCard() {
-  return (
-    <div className="flex flex-col md:flex-row bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden">
-      <div className="w-full md:w-48 h-48 bg-gray-200">
-        <img
-          src="https://source.unsplash.com/random/400x300/?village,meeting"
-          alt="Berita"
-          className="w-full h-full object-cover"
-        />
-      </div>
+import React from 'react';
 
-      <div className="p-5 flex flex-col justify-center">
-        <div className="flex items-center gap-2 text-[10px] text-gray-500 mb-2">
-          <span>
-            <i className="far fa-calendar-alt"></i> 12 Okt 2023
-          </span>
-          <span>•</span>
-          <span className="text-desa-main font-semibold">Pembangunan</span>
-        </div>
+export default function BeritaCard({ berita }) {
+    const data = berita || {
+        tanggal: "12 Okt 2023",
+        kategori: "Pembangunan",
+        judul: "Musyawarah Perencanaan Pembangunan Desa Tahun 2024",
+        ringkasan: "Kegiatan musyawarah desa membahas prioritas penggunaan dana desa serta perencanaan infrastruktur desa.",
+        imageUrl: "https://source.unsplash.com/random/120x80/?village,meeting"
+    };
 
-        <h3 className="font-bold text-lg leading-tight">
-          Musyawarah Perencanaan Pembangunan Desa Tahun 2024
-        </h3>
+    return (
+        // Wrapper: Hover background diubah menjadi Hijau Muda (hover:bg-green-50)
+        <a 
+            href={`/berita/${data.id}`} 
+            className="flex items-start gap-4 p-4 hover:bg-green-50 transition duration-150 rounded-lg border-b last:border-b-0 border-gray-100"
+        >
+            
+            {/* Bagian Gambar */}
+            <div className="flex-shrink-0 w-24 h-16 overflow-hidden rounded-md bg-gray-200"> 
+                <img
+                    src={data.imageUrl}
+                    alt={data.judul}
+                    className="w-full h-full object-cover" 
+                />
+            </div>
 
-        <p className="text-sm text-gray-600">
-          Kegiatan musyawarah desa membahas prioritas penggunaan dana desa...
-        </p>
+            {/* Bagian Konten Teks */}
+            <div className="flex-grow">
+                
+                {/* Judul: Hover diubah menjadi Hijau Gelap */}
+                <h3 className="font-bold text-sm text-gray-800 hover:text-green-700 transition line-clamp-2 mb-1">
+                    {data.judul}
+                </h3>
 
-        <a href="#" className="text-desa-main text-sm font-semibold mt-3 hover:underline">
-          Baca Selengkapnya →
+                {/* Metadata: Kategori diubah menjadi Hijau */}
+                <div className="text-xs text-gray-500 flex items-center space-x-2">
+                    <span className="text-green-600 font-medium">{data.kategori}</span>
+                    <span className="text-gray-300">•</span>
+                    <span>{data.tanggal}</span>
+                </div>
+            </div>
         </a>
-      </div>
-    </div>
-  );
+    );
 }

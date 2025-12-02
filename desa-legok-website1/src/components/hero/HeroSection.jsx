@@ -35,7 +35,7 @@ export default function HeroSection() {
         </h1>
 
         <p className="text-[var(--desa-light)] mb-8 text-sm md:text-base">
-          Wujudkan desa yang mandiri, transparan, dan melayani dengan sepenuh hati melalui platform digital terpadu.
+          Wujudkan desa yang mandiri, transparan dan melayani dengan sepenuh hati melalui platform digital terpadu.
         </p>
 
         <div className="flex flex-col md:flex-row justify-center gap-4">
