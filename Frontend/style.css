@@ -1,256 +1,30 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-    color: #333;
-    scroll-behavior: smooth;
+/* custom.css */
+
+/* Animasi muncul pelan untuk form */
+.animation-fade {
+    animation: fadeIn 0.5s ease-out forwards;
 }
 
-/* Header */
-header {
-    background-color: #4CAF50; /* Warna hijau seperti berdesa.id */
-    color: white;
-    padding: 10px 20px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-}
-
-.header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-/* Styling Logo di Header */
-.logo {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0; /* Mencegah logo menyusut */
-}
-
-.logo img {
-    width: 80px; /* Ukuran lebar logo, sesuaikan jika perlu */
-    height: auto; /* Tinggi otomatis untuk menjaga rasio */
-    margin-right: 15px; /* Jarak antara logo dan teks */
-    border-radius: 5px; /* Sudut melengkung jika logo berbentuk kotak */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Bayangan halus untuk efek 3D */
-    transition: transform 0.3s ease; /* Efek transisi saat hover */
-}
-
-.logo img:hover {
-    transform: scale(1.05); /* Sedikit membesar saat hover untuk interaktivitas */
-}
-
-.logo h1 {
-    font-size: 24px; /* Ukuran font judul desa */
-    font-weight: bold;
-    color: white; /* Warna teks putih untuk kontras dengan header hijau */
-    margin: 0; /* Hapus margin default */
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3); /* Bayangan teks untuk readability */
-}
-
-/* Responsivitas untuk Logo (untuk layar kecil) */
-@media (max-width: 768px) {
-    .logo img {
-        width: 60px; /* Ukuran logo lebih kecil di mobile */
-        margin-right: 10px;
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
     }
-    .logo h1 {
-        font-size: 18px; /* Font lebih kecil di mobile */
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
-nav {
-    display: flex;
-    align-items: center;
-}
-
-nav a {
-    color: white;
-    margin: 0 15px;
-    text-decoration: none;
-}
-
-.login-btn {
-    background-color: #fff;
-    color: #4CAF50;
-    border: none;
-    padding: 8px 15px;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-/* Slider */
-.slider {
-    position: relative;
-    max-width: 1200px;
-    margin: 20px auto;
+/* Pastikan semua elemen yang memerlukan line-clamp berfungsi */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-.slide {
-    display: none;
-    position: relative;
-}
-
-.slide.active {
-    display: block;
-}
-
-.slide img {
-    width: 100%;
-    height: 400px;
-    object-fit: cover;
-}
-
-.slide-text {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    color: white;
-    background: rgba(0,0,0,0.5);
-    padding: 10px;
-    border-radius: 5px;
-}
-
-.slider button {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0,0,0,0.5);
-    color: white;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-    font-size: 20px;
-}
-
-.prev {
-    left: 10px;
-}
-
-.next {
-    right: 10px;
-}
-
-/* Dashboard */
-.dashboard {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    text-align: center;
-}
-
-.fitur-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
-}
-
-.fitur-item button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 15px;
-    font-size: 16px;
-    cursor: pointer;
-    border-radius: 5px;
-    width: 100%;
-}
-
-.fitur-item button:hover {
-    background-color: #45a049;
-}
-
-.fitur-item p {
-    margin-top: 10px;
-    color: #666;
-}
-
-/* Berita */
-.berita {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-.berita-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-}
-
-.berita-grid article {
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 10px;
-}
-
-.berita-grid img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 5px;
-}
-
-/* Content Sections */
-.content-section {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-form {
-    display: flex;
-    flex-direction: column;
-    max-width: 500px;
-}
-
-input, select, textarea {
-    margin-bottom: 10px;
-    padding: 8px;
-}
-
-button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-button:hover {
-    background-color: #45a049;
-}
-
-/* Footer */
-footer {
-    background-color: #333;
-    color: white;
-    text-align: center;
-    padding: 20px;
-}
-
-.footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.social-links a {
-    color: #4CAF50;
-    text-decoration: none;
+/* Penyesuaian bayangan untuk kartu layanan */
+.service-card-shadow:hover {
+    box-shadow: 0 10px 15px -3px rgba(30, 86, 49, 0.1), 0 4px 6px -2px rgba(30, 86, 49, 0.05); /* Bayangan hijau tipis */
 }
