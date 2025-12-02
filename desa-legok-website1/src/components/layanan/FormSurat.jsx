@@ -204,6 +204,10 @@ export default function FormSurat({ jenis, onBack }) {
              </div>
          );
     }
+    // CEK apakah semua file sudah terupload
+        const allFilesUploaded = currentPersyaratan.every(
+        (req) => req.startsWith("Catatan Khusus:") || files[req]
+        );
 
     return (
         <div className="mt-6 bg-white p-6 rounded-xl shadow-md border">
@@ -317,13 +321,15 @@ export default function FormSurat({ jenis, onBack }) {
                     </div>
                 ))}
                 
-                <button 
-                    type="submit" 
-                    className={`w-full bg-${COLOR_ACCENT}-600 text-white font-bold py-3 rounded-lg hover:bg-${COLOR_ACCENT}-700 transition`}
-                    disabled={currentPersyaratan.length === 0}
-                >
-                    Submit Semua Dokumen untuk Verifikasi
-                </button>
+                {allFilesUploaded && (
+                    <button 
+                        type="submit" 
+                        className="w-full bg-green-400 text-[var(--desa-main)] font-bold py-3 rounded-xl shadow-md hover:bg-green-500 transition mt-4"
+                    >
+                        Submit Semua Dokumen
+                    </button>
+                )}
+
             </form>
         </div>
     );
