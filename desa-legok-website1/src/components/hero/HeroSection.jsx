@@ -62,7 +62,7 @@ export default function HeroSection() {
             className="
               bg-white/10 border border-white text-white 
               font-semibold py-3 px-8 rounded-xl
-              hover:bg-white/20 transition
+              hover:bg-white hover:text-[var(--desa-main)] transition
             "
           >
             Hubungi Kami
