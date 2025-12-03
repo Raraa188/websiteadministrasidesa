@@ -1,5 +1,6 @@
 import logo from "../../assets/images/logo.png";
 import { FaWhatsapp } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 export default function Navbar() {
   return (
@@ -35,6 +36,18 @@ export default function Navbar() {
             <FaWhatsapp className="text-lg" />
             Kontak
           </a>
+
+          {/* Admin Login Icon */}
+          <Link
+            to="/admin/login"
+            className="bg-white/10 hover:bg-white/20 p-2 rounded-full transition-all duration-200 group relative"
+            title="Login Admin"
+          >
+            <i className="fas fa-user-shield text-lg"></i>
+            <span className="absolute -bottom-8 right-0 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              Admin Login
+            </span>
+          </Link>
         </div>
 
         {/* MOBILE MENU BUTTON */}

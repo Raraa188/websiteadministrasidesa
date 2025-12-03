@@ -1,0 +1,146 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+export default function AdminLogin() {
+    const [credentials, setCredentials] = useState({ username: "", password: "" });
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+
+    // Check if already logged in
+    React.useEffect(() => {
+        const isAuthenticated = localStorage.getItem("adminAuth");
+        if (isAuthenticated === "true") {
+            navigate("/admin");
+        }
+    }, [navigate]);
+
+    const handleChange = (e) => {
+        setCredentials({
+            ...credentials,
+            [e.target.name]: e.target.value
+        });
+        setError(""); // Clear error when user types
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError("");
+
+        // Simple authentication check
+        setTimeout(() => {
+            if (credentials.username === "admin" && credentials.password === "admin123") {
+                localStorage.setItem("adminAuth", "true");
+                localStorage.setItem("adminUsername", credentials.username);
+                navigate("/admin");
+            } else {
+                setError("Username atau password salah!");
+                setLoading(false);
+            }
+        }, 500); // Simulate network delay
+    };
+
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[var(--desa-main)] via-green-700 to-green-800 px-4">
+            <div className="max-w-md w-full">
+
+                {/* Logo/Header */}
+                <div className="text-center mb-8">
+                    <div className="inline-block p-4 bg-white rounded-full shadow-lg mb-4">
+                        <i className="fas fa-user-shield text-5xl text-[var(--desa-main)]"></i>
+                    </div>
+                    <h1 className="text-3xl font-bold text-white mb-2">Admin Dashboard</h1>
+                    <p className="text-green-100">Desa Legok</p>
+                </div>
+
+                {/* Login Card */}
+                <div className="bg-white rounded-2xl shadow-2xl p-8">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+                        Login Admin
+                    </h2>
+
+                    {error && (
+                        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-center gap-2">
+                            <i className="fas fa-exclamation-circle"></i>
+                            <span className="text-sm">{error}</span>
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        {/* Username */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <i className="fas fa-user mr-2"></i>Username
+                            </label>
+                            <input
+                                type="text"
+                                name="username"
+                                value={credentials.username}
+                                onChange={handleChange}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--desa-main)] focus:border-transparent transition"
+                                placeholder="Masukkan username"
+                                required
+                            />
+                        </div>
+
+                        {/* Password */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <i className="fas fa-lock mr-2"></i>Password
+                            </label>
+                            <input
+                                type="password"
+                                name="password"
+                                value={credentials.password}
+                                onChange={handleChange}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--desa-main)] focus:border-transparent transition"
+                                placeholder="Masukkan password"
+                                required
+                            />
+                        </div>
+
+                        {/* Submit Button */}
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full bg-[var(--desa-main)] text-white font-bold py-3 rounded-lg hover:bg-green-700 transition disabled:bg-green-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                            {loading ? (
+                                <>
+                                    <i className="fas fa-spinner fa-spin"></i>
+                                    Memproses...
+                                </>
+                            ) : (
+                                <>
+                                    <i className="fas fa-sign-in-alt"></i>
+                                    Login
+                                </>
+                            )}
+                        </button>
+                    </form>
+
+                    {/* Demo Credentials Info */}
+                    <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                        <p className="text-xs text-green-800 font-semibold mb-2">
+                            <i className="fas fa-info-circle mr-1"></i> Demo Credentials:
+                        </p>
+                        <p className="text-xs text-green-700">Username: <code className="bg-green-100 px-2 py-1 rounded">admin</code></p>
+                        <p className="text-xs text-green-700">Password: <code className="bg-green-100 px-2 py-1 rounded">admin123</code></p>
+                    </div>
+                </div>
+
+                {/* Back to Home */}
+                <div className="text-center mt-6">
+                    <button
+                        onClick={() => navigate("/")}
+                        className="text-white hover:text-green-200 transition text-sm"
+                    >
+                        <i className="fas fa-arrow-left mr-2"></i>
+                        Kembali ke Beranda
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}

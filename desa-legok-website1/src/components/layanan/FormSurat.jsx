@@ -96,6 +96,8 @@ export default function FormSurat({ jenis, onBack }) {
   const [files, setFiles] = useState({});
   const [kkType, setKkType] = useState("Baru");
   const [additionalFields, setAdditionalFields] = useState({
+    nama: "",
+    nomorTelepon: "",
     namaUsaha: "",
     alamatTujuan: ""
   });
@@ -178,7 +180,7 @@ export default function FormSurat({ jenis, onBack }) {
     alert(`Permohonan ${titleMap[jenis]} berhasil dikirim!`);
 
     setFiles({});
-    setAdditionalFields({ namaUsaha: "", alamatTujuan: "" });
+    setAdditionalFields({ nama: "", nomorTelepon: "", namaUsaha: "", alamatTujuan: "" });
   };
 
 
@@ -253,6 +255,52 @@ export default function FormSurat({ jenis, onBack }) {
 
       {/* FORM UPLOAD */}
       <form onSubmit={handleSubmit} className="space-y-4 border-t pt-4">
+
+        {/* DATA DIRI PENGAJU */}
+        <div className="p-4 border rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 shadow-sm">
+          <h4 className="font-bold text-blue-800 mb-3 flex items-center gap-2">
+            <i className="fas fa-user-circle"></i> Data Diri Pengaju
+          </h4>
+
+          <div className="space-y-3">
+            {/* Nama Lengkap */}
+            <div>
+              <label className="text-sm font-medium mb-1 block text-gray-700">
+                Nama Lengkap <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="nama"
+                value={additionalFields.nama}
+                onChange={handleAdditionalFieldChange}
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                placeholder="Masukkan nama lengkap Anda"
+                required
+              />
+            </div>
+
+            {/* Nomor Telepon */}
+            <div>
+              <label className="text-sm font-medium mb-1 block text-gray-700">
+                Nomor Telepon / WhatsApp <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="tel"
+                name="nomorTelepon"
+                value={additionalFields.nomorTelepon}
+                onChange={handleAdditionalFieldChange}
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                placeholder="Contoh: 08123456789"
+                pattern="[0-9]{10,13}"
+                title="Nomor telepon harus 10-13 digit angka"
+                required
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                <i className="fas fa-info-circle"></i> Format: 10-13 digit angka (tanpa spasi atau tanda hubung)
+              </p>
+            </div>
+          </div>
+        </div>
 
         {/* FIELD TAMBAHAN: USAHA */}
         {jenis === "usaha" && (
