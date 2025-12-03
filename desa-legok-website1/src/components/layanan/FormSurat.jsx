@@ -142,10 +142,9 @@ export default function FormSurat({ jenis, onBack }) {
 
     // FUNGSI SUBMIT DENGAN VALIDASI BAWAAN BROWSER
     const handleSubmit = (e) => {
-        e.preventDefault(); // Tetap mencegah reload halaman
+        e.preventDefault(); 
         
-        // Cek validitas form. reportValidity() akan memicu pop-up notifikasi bawaan browser
-        // seperti "Harap isi bidang ini" jika ada field 'required' yang kosong.
+        // Memaksa browser menampilkan pop-up notifikasi ("Harap isi bidang ini")
         if (!e.currentTarget.reportValidity()) {
             return; // Hentikan proses jika validasi gagal
         }
@@ -200,7 +199,7 @@ export default function FormSurat({ jenis, onBack }) {
             {/* TOMBOL KEMBALI */}
             <button
                 onClick={onBack}
-                className="text-sm mb-4 text-blue-600 hover:underline" // Eksplisit Biru
+                className="text-sm mb-4 text-blue-600 hover:underline" 
             >
                 ← Kembali ke daftar surat
             </button>
@@ -309,8 +308,8 @@ export default function FormSurat({ jenis, onBack }) {
                                     type="file"
                                     disabled={req.startsWith("Catatan Khusus:")} 
                                     onChange={(e) => handleFileChange(e, req)}
-                                    className="hidden" // Sembunyikan input asli
-                                    required={!req.startsWith("Catatan Khusus:")} // Aktifkan required untuk validasi
+                                    className="hidden" 
+                                    required={!req.startsWith("Catatan Khusus:")} 
                                 />
                             </label>
                         </div>
@@ -325,7 +324,7 @@ export default function FormSurat({ jenis, onBack }) {
                 {/* TOMBOL SUBMIT BIRU */}
                 <button 
                     type="submit" 
-                    className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition" // Eksplisit Biru
+                    className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition" 
                     disabled={currentPersyaratan.length === 0}
                 >
                     Submit Semua Dokumen untuk Verifikasi
