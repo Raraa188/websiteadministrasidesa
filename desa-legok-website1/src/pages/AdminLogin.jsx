@@ -45,18 +45,27 @@ export default function AdminLogin() {
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[var(--desa-main)] via-green-700 to-green-800 px-4">
             <div className="max-w-md w-full">
 
-                {/* Logo/Header */}
-                <div className="text-center mb-8">
-                    <div className="inline-block p-4 bg-white rounded-full shadow-lg mb-4">
-                        <i className="fas fa-user-shield text-5xl text-[var(--desa-main)]"></i>
-                    </div>
-                    <h1 className="text-3xl font-bold text-white mb-2">Admin Dashboard</h1>
-                    <p className="text-green-100">Desa Legok</p>
-                </div>
-
                 {/* Login Card */}
-                <div className="bg-white rounded-2xl shadow-2xl p-8">
-                    <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+                <div className="bg-white rounded-2xl shadow-2xl p-8 relative">
+                    {/* Back Button - Top Left */}
+                    <button
+                        onClick={() => navigate("/")}
+                        className="absolute top-4 left-4 text-gray-400 hover:text-[var(--desa-main)] transition-colors p-2 rounded-lg hover:bg-green-50"
+                        title="Kembali ke Beranda"
+                    >
+                        <i className="fas fa-arrow-left text-lg"></i>
+                    </button>
+
+                    {/* Logo/Header */}
+                    <div className="text-center mb-8">
+                        <div className="inline-block p-4 bg-green-50 rounded-full shadow-lg mb-4">
+                            <i className="fas fa-user-shield text-5xl text-[var(--desa-main)]"></i>
+                        </div>
+                        <h1 className="text-3xl font-bold text-gray-800 mb-2">Admin Dashboard</h1>
+                        <p className="text-gray-600">Desa Legok</p>
+                    </div>
+
+                    <h2 className="text-xl font-bold text-gray-800 mb-6 text-center border-t pt-6">
                         Login Admin
                     </h2>
 
@@ -119,27 +128,8 @@ export default function AdminLogin() {
                             )}
                         </button>
                     </form>
-
-                    {/* Demo Credentials Info */}
-                    <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                        <p className="text-xs text-green-800 font-semibold mb-2">
-                            <i className="fas fa-info-circle mr-1"></i> Demo Credentials:
-                        </p>
-                        <p className="text-xs text-green-700">Username: <code className="bg-green-100 px-2 py-1 rounded">admin</code></p>
-                        <p className="text-xs text-green-700">Password: <code className="bg-green-100 px-2 py-1 rounded">admin123</code></p>
-                    </div>
                 </div>
 
-                {/* Back to Home */}
-                <div className="text-center mt-6">
-                    <button
-                        onClick={() => navigate("/")}
-                        className="text-white hover:text-green-200 transition text-sm"
-                    >
-                        <i className="fas fa-arrow-left mr-2"></i>
-                        Kembali ke Beranda
-                    </button>
-                </div>
             </div>
         </div>
     );
