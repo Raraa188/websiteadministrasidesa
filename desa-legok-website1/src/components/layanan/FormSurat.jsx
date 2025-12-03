@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 /* ----------------------------------------------
-   DATA PERSYARATAN SURAT
+    DATA PERSYARATAN SURAT
 ---------------------------------------------- */
 const PERSYARATAN_AKTA_LAHIR = [
   "Formulir F2.01",
@@ -88,9 +88,8 @@ const UPLOAD_SURAT_LIST = [
   "usaha", "domisili"
 ];
 
-
 /* ----------------------------------------------
-   KOMPONEN FORM SURAT
+    KOMPONEN FORM SURAT
 ---------------------------------------------- */
 export default function FormSurat({ jenis, onBack }) {
   const [files, setFiles] = useState({});
@@ -128,9 +127,8 @@ export default function FormSurat({ jenis, onBack }) {
     domisili: "fa-house-chimney"
   };
 
-
   /* ----------------------------------------------
-     FUNGSI: Get List Persyaratan
+      FUNGSI GET PERSYARATAN
   ---------------------------------------------- */
   const getPersyaratan = (type) => {
     switch (type) {
@@ -150,9 +148,8 @@ export default function FormSurat({ jenis, onBack }) {
 
   const currentPersyaratan = getPersyaratan(jenis);
 
-
   /* ----------------------------------------------
-     HANDLER INPUT
+      HANDLER INPUT
   ---------------------------------------------- */
   const handleFileChange = (e, key) => {
     setFiles({ ...files, [key]: e.target.files[0] });
@@ -180,12 +177,16 @@ export default function FormSurat({ jenis, onBack }) {
     alert(`Permohonan ${titleMap[jenis]} berhasil dikirim!`);
 
     setFiles({});
-    setAdditionalFields({ nama: "", nomorTelepon: "", namaUsaha: "", alamatTujuan: "" });
+    setAdditionalFields({
+      nama: "",
+      nomorTelepon: "",
+      namaUsaha: "",
+      alamatTujuan: ""
+    });
   };
 
-
   /* ----------------------------------------------
-     VALIDASI JENIS SURAT
+      VALIDASI JENIS SURAT
   ---------------------------------------------- */
   if (!UPLOAD_SURAT_LIST.includes(jenis)) {
     return (
@@ -196,14 +197,13 @@ export default function FormSurat({ jenis, onBack }) {
     );
   }
 
-
   /* ----------------------------------------------
-     RENDER UTAMA
+      RENDER UTAMA
   ---------------------------------------------- */
   return (
     <div className="mt-6 bg-white p-6 rounded-xl shadow-md border">
 
-      {/* TOMBOL KEMBALI */}
+      {/* BACK BUTTON */}
       <button
         onClick={onBack}
         className="text-sm mb-4 text-blue-600 hover:underline"
@@ -211,18 +211,16 @@ export default function FormSurat({ jenis, onBack }) {
         ← Kembali ke daftar surat
       </button>
 
-      {/* JUDUL */}
+      {/* TITLE */}
       <h3 className="text-xl font-bold mb-4 text-blue-600">
         <i className={`fas ${iconMap[jenis]} mr-2`}></i>
         {titleMap[jenis]} (Upload Dokumen)
       </h3>
 
-
       {/* DROPDOWN KHUSUS KK */}
       {jenis === "kk" && (
         <div className="mb-6">
           <label className="block text-sm font-medium mb-2">Pilih Jenis Permohonan:</label>
-
           <select
             value={kkType}
             onChange={(e) => {
@@ -238,7 +236,6 @@ export default function FormSurat({ jenis, onBack }) {
         </div>
       )}
 
-
       {/* PANEL PERSYARATAN */}
       <div className="p-4 bg-blue-50 border border-blue-300 rounded-lg mb-6 shadow-sm">
         <h4 className="font-bold text-blue-800 mb-2 flex items-center gap-2">
@@ -252,28 +249,29 @@ export default function FormSurat({ jenis, onBack }) {
         </ol>
       </div>
 
-
       {/* FORM UPLOAD */}
       <form onSubmit={handleSubmit} className="space-y-4 border-t pt-4">
 
-        {/* DATA DIRI PENGAJU */}
+        {/* DATA DIRI */}
         <div className="p-4 border rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200 shadow-sm">
           <h4 className="font-bold text-blue-800 mb-3 flex items-center gap-2">
             <i className="fas fa-user-circle"></i> Data Diri Pengaju
           </h4>
 
           <div className="space-y-3">
-            {/* Nama Lengkap */}
+
+            {/* Nama */}
             <div>
               <label className="text-sm font-medium mb-1 block text-gray-700">
                 Nama Lengkap <span className="text-red-500">*</span>
               </label>
+
               <input
                 type="text"
                 name="nama"
                 value={additionalFields.nama}
                 onChange={handleAdditionalFieldChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className="w-full border rounded-lg px-4 py-2 focus:ring-2"
                 placeholder="Masukkan nama lengkap Anda"
                 required
               />
@@ -284,30 +282,31 @@ export default function FormSurat({ jenis, onBack }) {
               <label className="text-sm font-medium mb-1 block text-gray-700">
                 Nomor Telepon / WhatsApp <span className="text-red-500">*</span>
               </label>
+
               <input
                 type="tel"
                 name="nomorTelepon"
                 value={additionalFields.nomorTelepon}
                 onChange={handleAdditionalFieldChange}
-                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                className="w-full border rounded-lg px-4 py-2 focus:ring-2"
                 placeholder="Contoh: 08123456789"
                 pattern="[0-9]{10,13}"
                 title="Nomor telepon harus 10-13 digit angka"
                 required
               />
+
               <p className="text-xs text-gray-500 mt-1">
-                <i className="fas fa-info-circle"></i> Format: 10-13 digit angka (tanpa spasi atau tanda hubung)
+                <i className="fas fa-info-circle"></i> Format: 10–13 digit angka
               </p>
             </div>
+
           </div>
         </div>
 
         {/* FIELD TAMBAHAN: USAHA */}
         {jenis === "usaha" && (
           <div className="p-3 border rounded-lg bg-yellow-50">
-            <label className="text-sm font-medium mb-1 block">
-              Nama Usaha
-            </label>
+            <label className="text-sm font-medium mb-1 block">Nama Usaha</label>
 
             <input
               type="text"
@@ -338,14 +337,16 @@ export default function FormSurat({ jenis, onBack }) {
           </div>
         )}
 
-        {/* UPLOAD BERKAS */}
+        {/* UPLOAD FILE */}
+        <h4 className="text-lg font-semibold mt-6 pt-4 border-t">
+          Unggah Dokumen Persyaratan:
+        </h4>
+
         {currentPersyaratan.map((req, idx) => (
           <div key={idx} className="p-3 border rounded-lg bg-white shadow-sm">
-            <label className="text-sm font-medium block">
-              {req}
-            </label>
+            <label className="text-sm font-medium block">{req}</label>
 
-            <label className="inline-flex items-center px-4 py-2 mt-2 text-sm font-semibold rounded-md cursor-pointer text-white bg-blue-500 hover:bg-blue-600 transition">
+            <label className="inline-flex items-center px-4 py-2 mt-2 text-sm font-semibold rounded-md cursor-pointer text-white bg-blue-500 hover:bg-blue-600">
               Pilih File
               <input
                 type="file"
