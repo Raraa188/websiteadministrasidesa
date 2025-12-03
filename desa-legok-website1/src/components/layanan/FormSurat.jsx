@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-// --- DATA PERSYARATAN UNTUK SEMUA SURAT UPLOAD (TIDAK BERUBAH) ---
+// --- DATA PERSYARATAN UNTUK SEMUA SURAT UPLOAD ---
 
 const PERSYARATAN_AKTA_LAHIR = [
     "Formulir F2.01",
@@ -72,7 +72,7 @@ const PERSYARATAN_DOMISILI = [
     "Surat Pengantar RT/RW",
     "Kartu Keluarga (KK)",
     "KTP-eL Pemohon",
-    "Bukti Kepemilikan/Sewa Rumah (PBB/Surat Peranjian Sewa)"
+    "Bukti Kepemilikan/Sewa Rumah (PBB/Surat Perjanjian Sewa)"
 ];
 
 
@@ -140,12 +140,11 @@ export default function FormSurat({ jenis, onBack }) {
         });
     };
 
-    // PERUBAHAN UTAMA: Tambahkan reportValidity()
+    // FUNGSI SUBMIT DENGAN VALIDASI BAWAAN BROWSER
     const handleSubmit = (e) => {
-        e.preventDefault(); // Tetap mencegah reload halaman
+        e.preventDefault(); 
         
-        // Cek validitas form. reportValidity() akan memicu pop-up notifikasi bawaan browser
-        // seperti "Harap isi bidang ini" jika ada field 'required' yang kosong.
+        // Memaksa browser menampilkan pop-up notifikasi ("Harap isi bidang ini")
         if (!e.currentTarget.reportValidity()) {
             return; // Hentikan proses jika validasi gagal
         }
@@ -186,7 +185,6 @@ export default function FormSurat({ jenis, onBack }) {
         'Hilang': "KK Hilang atau Rusak",
     };
 
-<<<<<<< HEAD
     if (!UPLOAD_SURAT_LIST.includes(jenis)) {
          return (
              <div className="mt-6 p-6 bg-red-100 text-red-800 rounded-xl shadow-md border border-red-400">
@@ -195,28 +193,13 @@ export default function FormSurat({ jenis, onBack }) {
              </div>
          );
     }
-=======
-    // Jika jenis surat tidak ada di UPLOAD_SURAT_LIST (misalnya typo atau surat baru), berikan pesan error/fallback.
-    if (!UPLOAD_SURAT_LIST.includes(jenis)) {
-         return (
-             <div className="mt-6 p-6 bg-red-100 text-red-800 rounded-xl shadow-md border border-red-400">
-                <p>Error: Jenis surat "{jenis}" tidak dikenali atau tidak memiliki daftar persyaratan.</p>
-                <button onClick={onBack} className="mt-4 text-sm underline">← Kembali</button>
-             </div>
-         );
-    }
-    // CEK apakah semua file sudah terupload
-        const allFilesUploaded = currentPersyaratan.every(
-        (req) => req.startsWith("Catatan Khusus:") || files[req]
-        );
->>>>>>> ab6cb2410e0d17da92366912ea15e9bbca1f56ae
 
     return (
         <div className="mt-6 bg-white p-6 rounded-xl shadow-md border">
             {/* TOMBOL KEMBALI */}
             <button
                 onClick={onBack}
-                className="text-sm mb-4 text-blue-600 hover:underline" // Eksplisit Biru
+                className="text-sm mb-4 text-blue-600 hover:underline" 
             >
                 ← Kembali ke daftar surat
             </button>
@@ -282,7 +265,7 @@ export default function FormSurat({ jenis, onBack }) {
                             value={additionalFields.namaUsaha}
                             className="w-full border rounded-lg px-4 py-2 bg-white"
                             placeholder="Contoh: Toko Sembako Jaya"
-                            required // Wajib diisi
+                            required
                         />
                     </div>
                 )}
@@ -300,14 +283,13 @@ export default function FormSurat({ jenis, onBack }) {
                             className="w-full border rounded-lg px-4 py-2 bg-white"
                             placeholder="Tuliskan alamat lengkap tujuan pindah"
                             rows="3"
-                            required // Wajib diisi
+                            required
                         ></textarea>
                     </div>
                 )}
 
                 <h4 className="text-lg font-semibold mt-6 pt-4 border-t">Unggah Dokumen Persyaratan:</h4>
 
-<<<<<<< HEAD
                 {currentPersyaratan.map((req, index) => (
                     <div key={index} className="p-3 border rounded-lg bg-white shadow-sm">
                         <div className="flex items-center justify-between">
@@ -326,8 +308,8 @@ export default function FormSurat({ jenis, onBack }) {
                                     type="file"
                                     disabled={req.startsWith("Catatan Khusus:")} 
                                     onChange={(e) => handleFileChange(e, req)}
-                                    className="hidden" // Sembunyikan input asli
-                                    required={!req.startsWith("Catatan Khusus:")} // <-- Tetap pastikan ini ada
+                                    className="hidden" 
+                                    required={!req.startsWith("Catatan Khusus:")} 
                                 />
                             </label>
                         </div>
@@ -342,7 +324,7 @@ export default function FormSurat({ jenis, onBack }) {
                 {/* TOMBOL SUBMIT BIRU */}
                 <button 
                     type="submit" 
-                    className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition" // Eksplisit Biru
+                    className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition" 
                     disabled={currentPersyaratan.length === 0}
                 >
                     Submit Semua Dokumen untuk Verifikasi
@@ -350,35 +332,4 @@ export default function FormSurat({ jenis, onBack }) {
             </form>
         </div>
     );
-=======
-                {currentPersyaratan.map((req, index) => (
-                    <div key={index} className="p-3 border rounded-lg bg-gray-50">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Unggah Dokumen: <span className="font-semibold">{req}</span>
-                        </label>
-                        <input
-                            type="file"
-                            // Catatan Khusus tidak perlu input file
-                            disabled={req.startsWith("Catatan Khusus:")} 
-                            onChange={(e) => handleFileChange(e, req)}
-                            className={`w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-${COLOR_ACCENT}-100 file:text-${COLOR_ACCENT}-700 hover:file:bg-${COLOR_ACCENT}-200`}
-                            required={!req.startsWith("Catatan Khusus:")} // Tidak wajib jika hanya catatan
-                        />
-                        {files[req] && <p className="text-xs text-green-600 mt-1">✓ File Terunggah: {files[req].name}</p>}
-                    </div>
-                ))}
-                
-                {allFilesUploaded && (
-                    <button 
-                        type="submit" 
-                        className="w-full bg-green-400 text-[var(--desa-main)] font-bold py-3 rounded-xl shadow-md hover:bg-green-500 transition mt-4"
-                    >
-                        Submit Semua Dokumen
-                    </button>
-                )}
-
-            </form>
-        </div>
-    );
->>>>>>> ab6cb2410e0d17da92366912ea15e9bbca1f56ae
 }
