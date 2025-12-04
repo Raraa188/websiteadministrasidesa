@@ -8,7 +8,7 @@ export default function Navbar() {
       <div className="container mx-auto px-6 py-3 flex justify-between items-center">
 
         {/* LOGO + TEKS */}
-        <div className="flex items-center gap-3">
+        <Link to="/" className="flex items-center gap-3 hover:opacity-90 transition">
           <img
             src={logo}
             alt="Logo Desa"
@@ -21,17 +21,17 @@ export default function Navbar() {
               LEGOK - TANGERANG
             </p>
           </div>
-        </div>
+        </Link>
 
         {/* MENU */}
         <div className="hidden md:flex items-center space-x-6 text-sm font-medium">
-          <a href="#beranda" className="hover:text-[var(--desa-light)]">Beranda</a>
-          <a href="#layanan" className="hover:text-[var(--desa-light)]">Layanan</a>
-          <a href="#berita" className="hover:text-[var(--desa-light)]">Berita</a>
+          <a href="/#beranda" className="hover:text-[var(--desa-light)] transition">Beranda</a>
+          <a href="/#layanan" className="hover:text-[var(--desa-light)] transition">Layanan</a>
+          <a href="/#berita" className="hover:text-[var(--desa-light)] transition">Berita</a>
 
           <a
-            href="#kontak-wa"
-            className="bg-white text-[var(--desa-main)] px-4 py-1.5 rounded-full hover:bg-gray-100 flex items-center gap-2 shadow-sm"
+            href="/#kontak-wa"
+            className="bg-white text-[var(--desa-main)] px-4 py-1.5 rounded-full hover:bg-gray-100 flex items-center gap-2 shadow-sm transition"
           >
             <FaWhatsapp className="text-lg" />
             Kontak

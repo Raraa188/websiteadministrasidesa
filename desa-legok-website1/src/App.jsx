@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import Home from "./pages/Home";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import BeritaDetail from "./pages/BeritaDetail";
 import useSmoothScroll from "./hooks/useSmoothScroll";
 
 // Protected Route Component
@@ -19,6 +20,7 @@ export default function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
+        <Route path="/berita/:id" element={<BeritaDetail />} />
         <Route path="/admin/login" element={<AdminLogin />} />
 
         {/* Protected Admin Routes */}

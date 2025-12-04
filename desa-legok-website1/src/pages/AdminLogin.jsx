@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import kantor from "../assets/images/kantor.jpg";
 
 export default function AdminLogin() {
     const [credentials, setCredentials] = useState({ username: "", password: "" });
@@ -42,8 +43,19 @@ export default function AdminLogin() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[var(--desa-main)] via-green-700 to-green-800 px-4">
-            <div className="max-w-md w-full">
+        <div className="min-h-screen flex items-center justify-center relative overflow-hidden px-4">
+            {/* Background Image */}
+            <div className="absolute inset-0 z-0">
+                <img
+                    src={kantor}
+                    alt="Kantor Desa"
+                    className="w-full h-full object-cover"
+                />
+                {/* Green Overlay */}
+                <div className="absolute inset-0 bg-[var(--desa-main)] opacity-70"></div>
+            </div>
+
+            <div className="max-w-md w-full relative z-10">
 
                 {/* Login Card */}
                 <div className="bg-white rounded-2xl shadow-2xl p-8 relative">
