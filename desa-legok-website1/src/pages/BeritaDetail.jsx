@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import BeritaHero from '../components/berita/BeritaHero';
 import BeritaBreadcrumb from '../components/berita/BeritaBreadcrumb';
 import BeritaSidebar from '../components/berita/BeritaSidebar';
+import FloatingChatBubble from '../components/sidebar/FloatingChatBubble';
 import berita1 from '../assets/images/berita1.jpeg';
 import berita2 from '../assets/images/berita2.jpeg';
 import berita3 from '../assets/images/berita3.jpg';
@@ -164,6 +165,8 @@ export default function BeritaDetail() {
                 {/* End Card Wrapper */}
             </div>
 
+            {/* Floating WhatsApp Chat Bubble */}
+            <FloatingChatBubble />
         </div>
     );
 }

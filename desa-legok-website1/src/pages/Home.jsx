@@ -5,6 +5,7 @@ import LayananSection from "../components/layanan/LayananSection";
 import BeritaSection from "../components/berita/BeritaSection";
 import KontakWA from "../components/sidebar/KontakWA";
 import JamOperasional from "../components/sidebar/JamOperasional";
+import FloatingChatBubble from "../components/sidebar/FloatingChatBubble";
 import Footer from "../components/footer/Footer";
 
 export default function Home() {
@@ -31,6 +32,9 @@ export default function Home() {
       </main>
 
       <Footer />
+
+      {/* Floating WhatsApp Chat Bubble */}
+      <FloatingChatBubble />
     </>
   );
 }

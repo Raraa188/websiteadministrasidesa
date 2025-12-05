@@ -7,4 +7,14 @@ export default defineConfig({
     tailwindcss(),
     react(),
   ],
+  server: {
+    proxy: {
+      '/api/n8n': {
+        target: 'https://n8n.kitapunya.web.id',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/n8n/, ''),
+        secure: false
+      }
+    }
+  }
 });
