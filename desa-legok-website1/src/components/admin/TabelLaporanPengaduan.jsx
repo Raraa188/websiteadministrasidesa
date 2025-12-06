@@ -1,48 +1,80 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { getAllPengaduan, updatePengaduanStatus } from "../../services/pengaduanService";
 
 export default function TabelLaporanPengaduan() {
     const [searchTerm, setSearchTerm] = useState("");
     const [filterStatus, setFilterStatus] = useState("all");
     const [filterKategori, setFilterKategori] = useState("all");
     const [currentPage, setCurrentPage] = useState(1);
+    const [data, setData] = useState([]);
+    const [totalCount, setTotalCount] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const itemsPerPage = 10;
 
-    // Sample data
-    const sampleData = [
-        { id: 1, nama: "Ahmad Fauzi", kontak: "081234567890", kategori: "Infrastruktur", deskripsi: "Jalan rusak di RT 03 perlu segera diperbaiki karena membahayakan pengendara", tanggal: "2025-12-01", status: "baru", prioritas: "tinggi" },
-        { id: 2, nama: "Siti Nurhaliza", kontak: "081234567891", kategori: "Kebersihan", deskripsi: "Sampah menumpuk di dekat pasar tradisional", tanggal: "2025-12-01", status: "ditangani", prioritas: "sedang" },
-        { id: 3, nama: "Budi Santoso", kontak: "081234567892", kategori: "Keamanan", deskripsi: "Lampu jalan mati di Jalan Raya Legok", tanggal: "2025-12-02", status: "selesai", prioritas: "tinggi" },
-        { id: 4, nama: "Dewi Lestari", kontak: "081234567893", kategori: "Pelayanan", deskripsi: "Pelayanan administrasi yang lambat", tanggal: "2025-12-02", status: "baru", prioritas: "rendah" },
-        { id: 5, nama: "Rina Wijaya", kontak: "081234567894", kategori: "Infrastruktur", deskripsi: "Drainase tersumbat menyebabkan banjir", tanggal: "2025-12-02", status: "ditangani", prioritas: "tinggi" },
-        { id: 6, nama: "Joko Widodo", kontak: "081234567895", kategori: "Kebersihan", deskripsi: "Perlu penambahan tempat sampah di taman", tanggal: "2025-12-03", status: "selesai", prioritas: "rendah" },
-        { id: 7, nama: "Mega Wati", kontak: "081234567896", kategori: "Keamanan", deskripsi: "Ronda malam perlu ditingkatkan", tanggal: "2025-12-03", status: "baru", prioritas: "sedang" },
-        { id: 8, nama: "Prabowo Subianto", kontak: "081234567897", kategori: "Infrastruktur", deskripsi: "Jembatan retak dan perlu perbaikan", tanggal: "2025-12-03", status: "ditangani", prioritas: "tinggi" },
-        { id: 9, nama: "Anies Baswedan", kontak: "081234567898", kategori: "Pelayanan", deskripsi: "Website desa sering down", tanggal: "2025-12-03", status: "selesai", prioritas: "sedang" },
-        { id: 10, nama: "Ganjar Pranowo", kontak: "081234567899", kategori: "Kebersihan", deskripsi: "Gorong-gorong tersumbat", tanggal: "2025-12-03", status: "baru", prioritas: "tinggi" }
-    ];
+    // Fetch data from Supabase
+    useEffect(() => {
+        fetchPengaduanData();
+    }, [currentPage, filterStatus, filterKategori, searchTerm]);
 
-    // Filter and search
-    const filteredData = sampleData.filter(item => {
-        const matchesSearch = item.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.kategori.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.deskripsi.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus = filterStatus === "all" || item.status === filterStatus;
-        const matchesKategori = filterKategori === "all" || item.kategori === filterKategori;
-        return matchesSearch && matchesStatus && matchesKategori;
-    });
+    const fetchPengaduanData = async () => {
+        setLoading(true);
+        setError(null);
 
-    // Pagination
-    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage);
+        try {
+            const filters = {};
+
+            if (filterStatus !== "all") {
+                filters.status = filterStatus;
+            }
+
+            if (filterKategori !== "all") {
+                filters.kategori = filterKategori;
+            }
+
+            if (searchTerm) {
+                filters.search = searchTerm;
+            }
+
+            const { data: pengaduanData, totalCount: count, error: fetchError } = await getAllPengaduan(
+                filters,
+                currentPage,
+                itemsPerPage
+            );
+
+            if (fetchError) {
+                throw fetchError;
+            }
+
+            setData(pengaduanData || []);
+            setTotalCount(count || 0);
+        } catch (err) {
+            console.error("Error fetching pengaduan:", err);
+            setError("Gagal memuat data pengaduan. Silakan coba lagi.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const formatDate = (dateString) => {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('id-ID', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    };
 
     const getStatusBadge = (status) => {
         const badges = {
-            baru: { label: "Baru", color: "bg-yellow-100 text-yellow-800 border-yellow-300" },
-            ditangani: { label: "Ditangani", color: "bg-green-100 text-green-800 border-green-300" },
-            selesai: { label: "Selesai", color: "bg-green-100 text-green-800 border-green-300" }
+            pending: { label: "Pending", color: "bg-yellow-100 text-yellow-800 border-yellow-300" },
+            ditinjau: { label: "Ditinjau", color: "bg-blue-100 text-blue-800 border-blue-300" },
+            diproses: { label: "Diproses", color: "bg-purple-100 text-purple-800 border-purple-300" },
+            selesai: { label: "Selesai", color: "bg-green-100 text-green-800 border-green-300" },
+            ditolak: { label: "Ditolak", color: "bg-red-100 text-red-800 border-red-300" }
         };
-        return badges[status] || badges.baru;
+        return badges[status] || badges.pending;
     };
 
     const getPriorityBadge = (prioritas) => {
@@ -54,14 +86,57 @@ export default function TabelLaporanPengaduan() {
         return badges[prioritas] || badges.sedang;
     };
 
-    const handleStatusChange = (id, newStatus) => {
-        console.log(`Changing status of ID ${id} to ${newStatus}`);
-        alert(`Status pengaduan #${id} diubah menjadi: ${newStatus}`);
+    const handleStatusChange = async (id, newStatus) => {
+        const confirmed = window.confirm(`Apakah Anda yakin ingin mengubah status pengaduan ini menjadi "${newStatus}"?`);
+        if (!confirmed) return;
+
+        const { data, error: updateError } = await updatePengaduanStatus(id, newStatus);
+
+        if (updateError) {
+            alert("Gagal mengubah status. Silakan coba lagi.");
+            console.error(updateError);
+        } else {
+            alert(`Status pengaduan berhasil diubah menjadi: ${newStatus}`);
+            // Refresh data
+            fetchPengaduanData();
+        }
+    };
+
+    const handleViewDetail = (item) => {
+        let detailText = `DETAIL PENGADUAN\n\n`;
+        detailText += `Nama: ${item.nama}\n`;
+        detailText += `NIK: ${item.nik || '-'}\n`;
+        detailText += `Telepon: ${item.telepon}\n`;
+        detailText += `Email: ${item.email || '-'}\n`;
+        detailText += `Kategori: ${item.kategori}\n`;
+        detailText += `Judul: ${item.judul}\n`;
+        detailText += `Lokasi: ${item.lokasi || '-'}\n`;
+        detailText += `Deskripsi:\n${item.deskripsi}\n\n`;
+        detailText += `Status: ${item.status}\n`;
+        detailText += `Prioritas: ${item.prioritas}\n`;
+        detailText += `Tanggal Laporan: ${formatDate(item.tanggal_laporan)}\n`;
+
+        if (item.tanggapan_admin) {
+            detailText += `\nTanggapan Admin:\n${item.tanggapan_admin}`;
+        }
+
+        if (item.bukti_foto_url) {
+            detailText += `\n\nBukti Foto: Ada (klik OK untuk membuka)`;
+            const openBukti = window.confirm(detailText);
+            if (openBukti) {
+                window.open(item.bukti_foto_url, '_blank');
+            }
+        } else {
+            alert(detailText);
+        }
     };
 
     const truncateText = (text, maxLength = 60) => {
         return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
     };
+
+    // Pagination
+    const totalPages = Math.ceil(totalCount / itemsPerPage);
 
     return (
         <div className="space-y-6">
@@ -87,9 +162,12 @@ export default function TabelLaporanPengaduan() {
                         <input
                             type="text"
                             value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onChange={(e) => {
+                                setSearchTerm(e.target.value);
+                                setCurrentPage(1); // Reset to first page
+                            }}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--desa-main)]"
-                            placeholder="Cari berdasarkan nama, kategori, atau deskripsi..."
+                            placeholder="Cari berdasarkan nama, judul, atau deskripsi..."
                         />
                     </div>
 
@@ -100,14 +178,18 @@ export default function TabelLaporanPengaduan() {
                         </label>
                         <select
                             value={filterKategori}
-                            onChange={(e) => setFilterKategori(e.target.value)}
+                            onChange={(e) => {
+                                setFilterKategori(e.target.value);
+                                setCurrentPage(1);
+                            }}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--desa-main)]"
                         >
                             <option value="all">Semua Kategori</option>
-                            <option value="Infrastruktur">Infrastruktur</option>
-                            <option value="Kebersihan">Kebersihan</option>
-                            <option value="Keamanan">Keamanan</option>
-                            <option value="Pelayanan">Pelayanan</option>
+                            <option value="infrastruktur">Infrastruktur</option>
+                            <option value="pelayanan">Pelayanan</option>
+                            <option value="lingkungan">Lingkungan</option>
+                            <option value="keamanan">Keamanan</option>
+                            <option value="lainnya">Lainnya</option>
                         </select>
                     </div>
 
@@ -118,20 +200,25 @@ export default function TabelLaporanPengaduan() {
                         </label>
                         <select
                             value={filterStatus}
-                            onChange={(e) => setFilterStatus(e.target.value)}
+                            onChange={(e) => {
+                                setFilterStatus(e.target.value);
+                                setCurrentPage(1);
+                            }}
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--desa-main)]"
                         >
                             <option value="all">Semua Status</option>
-                            <option value="baru">Baru</option>
-                            <option value="ditangani">Ditangani</option>
+                            <option value="pending">Pending</option>
+                            <option value="ditinjau">Ditinjau</option>
+                            <option value="diproses">Diproses</option>
                             <option value="selesai">Selesai</option>
+                            <option value="ditolak">Ditolak</option>
                         </select>
                     </div>
                 </div>
 
                 {/* Results Count */}
                 <div className="mt-4 text-sm text-gray-600">
-                    Menampilkan <span className="font-semibold">{paginatedData.length}</span> dari <span className="font-semibold">{filteredData.length}</span> pengaduan
+                    Menampilkan <span className="font-semibold">{data.length}</span> dari <span className="font-semibold">{totalCount}</span> pengaduan
                 </div>
             </div>
 
@@ -145,7 +232,7 @@ export default function TabelLaporanPengaduan() {
                                 <th className="px-6 py-4 text-left text-sm font-semibold">Nama Pelapor</th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold">Kontak</th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold">Kategori</th>
-                                <th className="px-6 py-4 text-left text-sm font-semibold">Deskripsi</th>
+                                <th className="px-6 py-4 text-left text-sm font-semibold">Judul</th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold">Tanggal</th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold">Prioritas</th>
                                 <th className="px-6 py-4 text-left text-sm font-semibold">Status</th>
@@ -153,26 +240,40 @@ export default function TabelLaporanPengaduan() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
-                            {paginatedData.length > 0 ? (
-                                paginatedData.map((item, idx) => (
+                            {loading ? (
+                                <tr>
+                                    <td colSpan="9" className="px-6 py-8 text-center">
+                                        <i className="fas fa-spinner fa-spin text-3xl text-[var(--desa-main)] mb-2"></i>
+                                        <p className="text-gray-500">Memuat data...</p>
+                                    </td>
+                                </tr>
+                            ) : error ? (
+                                <tr>
+                                    <td colSpan="9" className="px-6 py-8 text-center text-red-500">
+                                        <i className="fas fa-exclamation-triangle text-3xl mb-2 block"></i>
+                                        {error}
+                                    </td>
+                                </tr>
+                            ) : data.length > 0 ? (
+                                data.map((item, idx) => (
                                     <tr key={item.id} className="hover:bg-gray-50 transition">
-                                        <td className="px-6 py-4 text-sm text-gray-700">{startIndex + idx + 1}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-700">{(currentPage - 1) * itemsPerPage + idx + 1}</td>
                                         <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.nama}</td>
                                         <td className="px-6 py-4 text-sm text-gray-700">
                                             <i className="fas fa-phone mr-2 text-[var(--desa-main)]"></i>
-                                            {item.kontak}
+                                            {item.telepon}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
+                                            <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold capitalize">
                                                 {item.kategori}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-700 max-w-xs">
-                                            <span title={item.deskripsi}>{truncateText(item.deskripsi)}</span>
+                                            <span title={item.judul}>{truncateText(item.judul, 40)}</span>
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-700">
                                             <i className="fas fa-calendar mr-2 text-gray-400"></i>
-                                            {item.tanggal}
+                                            {formatDate(item.tanggal_laporan)}
                                         </td>
                                         <td className="px-6 py-4 text-center">
                                             <i className={`fas ${getPriorityBadge(item.prioritas).icon} ${getPriorityBadge(item.prioritas).color} text-lg`} title={item.prioritas}></i>
@@ -185,7 +286,7 @@ export default function TabelLaporanPengaduan() {
                                         <td className="px-6 py-4">
                                             <div className="flex gap-2">
                                                 <button
-                                                    onClick={() => alert(`Melihat detail pengaduan #${item.id}\n\nDeskripsi lengkap:\n${item.deskripsi}`)}
+                                                    onClick={() => handleViewDetail(item)}
                                                     className="px-3 py-1 bg-[var(--desa-main)] hover:bg-green-700 text-white text-xs rounded-lg transition"
                                                     title="Lihat Detail"
                                                 >
@@ -197,9 +298,11 @@ export default function TabelLaporanPengaduan() {
                                                     defaultValue=""
                                                 >
                                                     <option value="" disabled>Ubah Status</option>
-                                                    <option value="baru">Baru</option>
-                                                    <option value="ditangani">Ditangani</option>
+                                                    <option value="pending">Pending</option>
+                                                    <option value="ditinjau">Ditinjau</option>
+                                                    <option value="diproses">Diproses</option>
                                                     <option value="selesai">Selesai</option>
+                                                    <option value="ditolak">Ditolak</option>
                                                 </select>
                                             </div>
                                         </td>

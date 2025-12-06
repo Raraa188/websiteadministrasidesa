@@ -1,20 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 import kantor from "../assets/images/kantor.jpg";
 
 export default function AdminLogin() {
-    const [credentials, setCredentials] = useState({ username: "", password: "" });
+    const [credentials, setCredentials] = useState({ email: "", password: "" });
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const { login, isAuthenticated } = useAuth();
 
     // Check if already logged in
-    React.useEffect(() => {
-        const isAuthenticated = localStorage.getItem("adminAuth");
-        if (isAuthenticated === "true") {
+    useEffect(() => {
+        if (isAuthenticated) {
             navigate("/admin");
         }
-    }, [navigate]);
+    }, [isAuthenticated, navigate]);
 
     const handleChange = (e) => {
         setCredentials({
@@ -24,23 +25,27 @@ export default function AdminLogin() {
         setError(""); // Clear error when user types
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError("");
 
-        // Simple authentication check
-        setTimeout(() => {
-            if (credentials.username === "admin" && credentials.password === "admin123") {
-                localStorage.setItem("adminAuth", "true");
-                localStorage.setItem("adminUsername", credentials.username);
-                navigate("/admin");
-            } else {
-                setError("Username atau password salah!");
+        try {
+            const { user, error: loginError } = await login(credentials.email, credentials.password);
+
+            if (loginError) {
+                setError(loginError);
                 setLoading(false);
+            } else if (user) {
+                // Successfully logged in, navigate to admin
+                navigate("/admin");
             }
-        }, 500); // Simulate network delay
+        } catch (err) {
+            setError("Terjadi kesalahan saat login. Silakan coba lagi.");
+            setLoading(false);
+        }
     };
+
 
     return (
         <div className="min-h-screen flex items-center justify-center relative overflow-hidden px-4">
@@ -89,18 +94,18 @@ export default function AdminLogin() {
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-5">
-                        {/* Username */}
+                        {/* Email */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                <i className="fas fa-user mr-2"></i>Username
+                                <i className="fas fa-envelope mr-2"></i>Email
                             </label>
                             <input
                                 type="text"
-                                name="username"
-                                value={credentials.username}
+                                name="email"
+                                value={credentials.email}
                                 onChange={handleChange}
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--desa-main)] focus:border-transparent transition"
-                                placeholder="Masukkan username"
+                                placeholder="Masukkan email"
                                 required
                             />
                         </div>

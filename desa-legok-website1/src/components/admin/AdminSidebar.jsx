@@ -1,8 +1,10 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function AdminSidebar({ activeSection, setActiveSection }) {
     const navigate = useNavigate();
+    const { user, logout } = useAuth();
 
     const menuItems = [
         { id: "beranda", label: "Beranda", icon: "fa-home" },
@@ -10,10 +12,9 @@ export default function AdminSidebar({ activeSection, setActiveSection }) {
         { id: "pengaduan", label: "Laporan Pengaduan", icon: "fa-comments" }
     ];
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         if (window.confirm("Apakah Anda yakin ingin logout?")) {
-            localStorage.removeItem("adminAuth");
-            localStorage.removeItem("adminUsername");
+            await logout();
             navigate("/admin/login");
         }
     };
@@ -34,9 +35,9 @@ export default function AdminSidebar({ activeSection, setActiveSection }) {
                 </div>
                 <div className="mt-4 p-3 bg-green-700 rounded-lg">
                     <p className="text-xs text-green-200">Logged in as:</p>
-                    <p className="font-semibold text-sm">
+                    <p className="font-semibold text-sm truncate" title={user?.email}>
                         <i className="fas fa-user-circle mr-2"></i>
-                        {localStorage.getItem("adminUsername") || "Admin"}
+                        {user?.email || "Admin"}
                     </p>
                 </div>
             </div>
@@ -49,8 +50,8 @@ export default function AdminSidebar({ activeSection, setActiveSection }) {
                             <button
                                 onClick={() => setActiveSection(item.id)}
                                 className={`w-full text-left px-4 py-3 rounded-lg transition flex items-center gap-3 ${activeSection === item.id
-                                        ? "bg-white text-[var(--desa-main)] font-semibold shadow-lg"
-                                        : "hover:bg-green-700 text-green-100"
+                                    ? "bg-white text-[var(--desa-main)] font-semibold shadow-lg"
+                                    : "hover:bg-green-700 text-green-100"
                                     }`}
                             >
                                 <i className={`fas ${item.icon} text-lg`}></i>

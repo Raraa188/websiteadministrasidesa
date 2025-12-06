@@ -1,73 +1,102 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { getSuratStats } from "../../services/suratService";
+import { getPengaduanStats } from "../../services/pengaduanService";
 
 export default function DashboardBeranda() {
+    const [suratStats, setSuratStats] = useState(null);
+    const [pengaduanStats, setPengaduanStats] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetchStats();
+    }, []);
+
+    const fetchStats = async () => {
+        setLoading(true);
+        try {
+            const [suratData, pengaduanData] = await Promise.all([
+                getSuratStats(),
+                getPengaduanStats()
+            ]);
+
+            if (!suratData.error) {
+                setSuratStats(suratData.data);
+            }
+
+            if (!pengaduanData.error) {
+                setPengaduanStats(pengaduanData.data);
+            }
+        } catch (error) {
+            console.error("Error fetching stats:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const stats = [
         {
             title: "Total Pengajuan Surat",
-            value: "45",
+            value: loading ? "..." : (suratStats?.total || 0),
             icon: "fa-file-alt",
             color: "green",
-            details: [
-                { label: "Pending", value: 12, color: "yellow" },
-                { label: "Diproses", value: 18, color: "green" },
-                { label: "Selesai", value: 15, color: "green" }
+            details: loading ? [] : [
+                { label: "Pending", value: suratStats?.pending || 0, color: "yellow" },
+                { label: "Diproses", value: suratStats?.diproses || 0, color: "blue" },
+                { label: "Selesai", value: suratStats?.selesai || 0, color: "green" },
+                { label: "Ditolak", value: suratStats?.ditolak || 0, color: "red" }
             ]
         },
         {
             title: "Total Laporan Pengaduan",
-            value: "28",
+            value: loading ? "..." : (pengaduanStats?.total || 0),
             icon: "fa-comments",
             color: "green",
-            details: [
-                { label: "Baru", value: 8, color: "yellow" },
-                { label: "Ditangani", value: 13, color: "green" },
-                { label: "Selesai", value: 7, color: "green" }
+            details: loading ? [] : [
+                { label: "Pending", value: pengaduanStats?.byStatus?.pending || 0, color: "yellow" },
+                { label: "Ditinjau", value: pengaduanStats?.byStatus?.ditinjau || 0, color: "blue" },
+                { label: "Diproses", value: pengaduanStats?.byStatus?.diproses || 0, color: "purple" },
+                { label: "Selesai", value: pengaduanStats?.byStatus?.selesai || 0, color: "green" }
             ]
         },
         {
-            title: "Pengajuan Bulan Ini",
-            value: "23",
-            icon: "fa-calendar-alt",
-            color: "green",
-            trend: "+15%",
-            trendUp: true
+            title: "Pengaduan Prioritas Tinggi",
+            value: loading ? "..." : (pengaduanStats?.byPrioritas?.tinggi || 0),
+            icon: "fa-exclamation-triangle",
+            color: "red",
         },
         {
-            title: "Rata-rata Waktu Proses",
-            value: "2.5 Hari",
-            icon: "fa-clock",
+            title: "Total Pengajuan",
+            value: loading ? "..." : ((suratStats?.total || 0) + (pengaduanStats?.total || 0)),
+            icon: "fa-clipboard-list",
             color: "orange",
-            trend: "-10%",
-            trendUp: true
+            details: loading ? [] : [
+                { label: "Pengajuan Surat", value: suratStats?.total || 0, color: "blue" },
+                { label: "Laporan Pengaduan", value: pengaduanStats?.total || 0, color: "purple" }
+            ]
         }
-    ];
-
-    const recentActivities = [
-        { type: "surat", name: "Ahmad Fauzi", action: "mengajukan Surat Keterangan Usaha", time: "5 menit lalu", status: "pending" },
-        { type: "pengaduan", name: "Siti Nurhaliza", action: "melaporkan Jalan Rusak", time: "15 menit lalu", status: "new" },
-        { type: "surat", name: "Budi Santoso", action: "mengajukan KTP", time: "1 jam lalu", status: "processed" },
-        { type: "pengaduan", name: "Dewi Lestari", action: "melaporkan Lampu Jalan Mati", time: "2 jam lalu", status: "handled" },
-        { type: "surat", name: "Rina Wijaya", action: "mengajukan Akta Kelahiran", time: "3 jam lalu", status: "completed" }
     ];
 
     const getColorClasses = (color) => {
         const colors = {
             green: "bg-[var(--desa-main)] text-white",
+            red: "bg-red-500 text-white",
             orange: "bg-orange-500 text-white",
-            yellow: "bg-yellow-500 text-white"
+            yellow: "bg-yellow-500 text-white",
+            blue: "bg-blue-500 text-white",
+            purple: "bg-purple-500 text-white"
         };
         return colors[color] || colors.green;
     };
 
-    const getStatusBadge = (status) => {
-        const badges = {
-            pending: { label: "Pending", color: "bg-yellow-100 text-yellow-800" },
-            new: { label: "Baru", color: "bg-yellow-100 text-yellow-800" },
-            processed: { label: "Diproses", color: "bg-green-100 text-green-800" },
-            handled: { label: "Ditangani", color: "bg-green-100 text-green-800" },
-            completed: { label: "Selesai", color: "bg-green-100 text-green-800" }
+    const getDetailColorClasses = (color) => {
+        const colors = {
+            yellow: "bg-yellow-100 text-yellow-800",
+            green: "bg-green-100 text-green-800",
+            blue: "bg-blue-100 text-blue-800",
+            purple: "bg-purple-100 text-purple-800",
+            red: "bg-red-100 text-red-800"
         };
-        return badges[status] || badges.pending;
+        return colors[color] || colors.green;
     };
 
     return (
@@ -90,24 +119,19 @@ export default function DashboardBeranda() {
                             <div className={`p-3 rounded-lg ${getColorClasses(stat.color)}`}>
                                 <i className={`fas ${stat.icon} text-2xl`}></i>
                             </div>
-                            {stat.trend && (
-                                <span className={`text-sm font-semibold ${stat.trendUp ? 'text-green-600' : 'text-red-600'}`}>
-                                    <i className={`fas fa-arrow-${stat.trendUp ? 'up' : 'down'} mr-1`}></i>
-                                    {stat.trend}
-                                </span>
-                            )}
                         </div>
                         <h3 className="text-gray-600 text-sm font-medium mb-2">{stat.title}</h3>
-                        <p className="text-3xl font-bold text-gray-800 mb-3">{stat.value}</p>
+                        <p className="text-3xl font-bold text-gray-800 mb-1">{stat.value}</p>
+                        {stat.subtitle && (
+                            <p className="text-sm text-gray-500 capitalize">{stat.subtitle}</p>
+                        )}
 
-                        {stat.details && (
-                            <div className="space-y-1 pt-3 border-t">
+                        {stat.details && stat.details.length > 0 && (
+                            <div className="space-y-1 pt-3 border-t mt-3">
                                 {stat.details.map((detail, i) => (
                                     <div key={i} className="flex justify-between items-center text-sm">
                                         <span className="text-gray-600">{detail.label}</span>
-                                        <span className={`font-semibold px-2 py-1 rounded ${detail.color === 'yellow' ? 'bg-yellow-100 text-yellow-800' :
-                                                'bg-green-100 text-green-800'
-                                            }`}>
+                                        <span className={`font-semibold px-2 py-1 rounded ${getDetailColorClasses(detail.color)}`}>
                                             {detail.value}
                                         </span>
                                     </div>
@@ -118,47 +142,130 @@ export default function DashboardBeranda() {
                 ))}
             </div>
 
-            {/* Recent Activities */}
-            <div className="bg-white rounded-xl shadow-md p-6">
-                <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                    <i className="fas fa-history text-[var(--desa-main)]"></i>
-                    Aktivitas Terbaru
-                </h2>
-                <div className="space-y-3">
-                    {recentActivities.map((activity, idx) => (
-                        <div key={idx} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
-                            <div className={`p-3 rounded-full ${activity.type === 'surat' ? 'bg-green-100 text-[var(--desa-main)]' : 'bg-green-200 text-green-700'
-                                }`}>
-                                <i className={`fas ${activity.type === 'surat' ? 'fa-file-alt' : 'fa-comment-dots'}`}></i>
-                            </div>
-                            <div className="flex-1">
-                                <p className="text-sm text-gray-800">
-                                    <span className="font-semibold">{activity.name}</span> {activity.action}
-                                </p>
-                                <p className="text-xs text-gray-500 mt-1">
-                                    <i className="fas fa-clock mr-1"></i>
-                                    {activity.time}
-                                </p>
-                            </div>
-                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusBadge(activity.status).color}`}>
-                                {getStatusBadge(activity.status).label}
-                            </span>
+            {/* Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Pengajuan Surat Summary */}
+                <div className="bg-white rounded-xl shadow-md p-6">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <i className="fas fa-file-alt text-[var(--desa-main)]"></i>
+                        Ringkasan Pengajuan Surat
+                    </h2>
+                    {loading ? (
+                        <div className="text-center py-8">
+                            <i className="fas fa-spinner fa-spin text-3xl text-[var(--desa-main)]"></i>
+                            <p className="text-gray-500 mt-2">Memuat data...</p>
                         </div>
-                    ))}
+                    ) : suratStats ? (
+                        <div className="space-y-3">
+                            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                <span className="text-gray-700">Total Pengajuan</span>
+                                <span className="font-bold text-2xl text-[var(--desa-main)]">{suratStats.total}</span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="p-3 bg-yellow-50 rounded-lg text-center">
+                                    <p className="text-xs text-gray-600 mb-1">Pending</p>
+                                    <p className="text-2xl font-bold text-yellow-600">{suratStats.pending || 0}</p>
+                                </div>
+                                <div className="p-3 bg-blue-50 rounded-lg text-center">
+                                    <p className="text-xs text-gray-600 mb-1">Diproses</p>
+                                    <p className="text-2xl font-bold text-blue-600">{suratStats.diproses || 0}</p>
+                                </div>
+                                <div className="p-3 bg-green-50 rounded-lg text-center">
+                                    <p className="text-xs text-gray-600 mb-1">Selesai</p>
+                                    <p className="text-2xl font-bold text-green-600">{suratStats.selesai || 0}</p>
+                                </div>
+                                <div className="p-3 bg-red-50 rounded-lg text-center">
+                                    <p className="text-xs text-gray-600 mb-1">Ditolak</p>
+                                    <p className="text-2xl font-bold text-red-600">{suratStats.ditolak || 0}</p>
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <p className="text-gray-500 text-center py-4">Tidak ada data</p>
+                    )}
+                </div>
+
+                {/* Laporan Pengaduan Summary */}
+                <div className="bg-white rounded-xl shadow-md p-6">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <i className="fas fa-comments text-[var(--desa-main)]"></i>
+                        Ringkasan Laporan Pengaduan
+                    </h2>
+                    {loading ? (
+                        <div className="text-center py-8">
+                            <i className="fas fa-spinner fa-spin text-3xl text-[var(--desa-main)]"></i>
+                            <p className="text-gray-500 mt-2">Memuat data...</p>
+                        </div>
+                    ) : pengaduanStats ? (
+                        <div className="space-y-3">
+                            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                <span className="text-gray-700">Total Pengaduan</span>
+                                <span className="font-bold text-2xl text-[var(--desa-main)]">{pengaduanStats.total}</span>
+                            </div>
+                            <div className="space-y-2">
+                                <div className="flex justify-between items-center p-2 bg-yellow-50 rounded">
+                                    <span className="text-sm text-gray-700">Pending</span>
+                                    <span className="font-bold text-yellow-600">{pengaduanStats.byStatus?.pending || 0}</span>
+                                </div>
+                                <div className="flex justify-between items-center p-2 bg-blue-50 rounded">
+                                    <span className="text-sm text-gray-700">Ditinjau</span>
+                                    <span className="font-bold text-blue-600">{pengaduanStats.byStatus?.ditinjau || 0}</span>
+                                </div>
+                                <div className="flex justify-between items-center p-2 bg-purple-50 rounded">
+                                    <span className="text-sm text-gray-700">Diproses</span>
+                                    <span className="font-bold text-purple-600">{pengaduanStats.byStatus?.diproses || 0}</span>
+                                </div>
+                                <div className="flex justify-between items-center p-2 bg-green-50 rounded">
+                                    <span className="text-sm text-gray-700">Selesai</span>
+                                    <span className="font-bold text-green-600">{pengaduanStats.byStatus?.selesai || 0}</span>
+                                </div>
+                            </div>
+
+                            {/* Priority Stats */}
+                            <div className="pt-3 border-t">
+                                <p className="text-sm font-medium text-gray-600 mb-2">Berdasarkan Prioritas:</p>
+                                <div className="grid grid-cols-3 gap-2">
+                                    <div className="text-center p-2 bg-red-50 rounded">
+                                        <p className="text-xs text-gray-600">Tinggi</p>
+                                        <p className="font-bold text-red-600">{pengaduanStats.byPrioritas?.tinggi || 0}</p>
+                                    </div>
+                                    <div className="text-center p-2 bg-orange-50 rounded">
+                                        <p className="text-xs text-gray-600">Sedang</p>
+                                        <p className="font-bold text-orange-600">{pengaduanStats.byPrioritas?.sedang || 0}</p>
+                                    </div>
+                                    <div className="text-center p-2 bg-green-50 rounded">
+                                        <p className="text-xs text-gray-600">Rendah</p>
+                                        <p className="font-bold text-green-600">{pengaduanStats.byPrioritas?.rendah || 0}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <p className="text-gray-500 text-center py-4">Tidak ada data</p>
+                    )}
                 </div>
             </div>
 
             {/* Quick Actions */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <button className="bg-[var(--desa-main)] hover:bg-green-700 text-white p-4 rounded-xl shadow-md transition flex items-center justify-center gap-3">
-                    <i className="fas fa-plus-circle text-2xl"></i>
-                    <span className="font-semibold">Tambah Pengajuan Manual</span>
+                <button
+                    onClick={() => fetchStats()}
+                    className="bg-[var(--desa-main)] hover:bg-green-700 text-white p-4 rounded-xl shadow-md transition flex items-center justify-center gap-3"
+                >
+                    <i className="fas fa-sync-alt text-2xl"></i>
+                    <span className="font-semibold">Refresh Data</span>
                 </button>
-                <button className="bg-green-600 hover:bg-green-700 text-white p-4 rounded-xl shadow-md transition flex items-center justify-center gap-3">
+                <button
+                    onClick={() => alert('Fitur export akan segera tersedia')}
+                    className="bg-green-600 hover:bg-green-700 text-white p-4 rounded-xl shadow-md transition flex items-center justify-center gap-3"
+                >
                     <i className="fas fa-download text-2xl"></i>
                     <span className="font-semibold">Export Laporan</span>
                 </button>
-                <button className="bg-green-700 hover:bg-green-800 text-white p-4 rounded-xl shadow-md transition flex items-center justify-center gap-3">
+                <button
+                    onClick={() => alert('Pengaturan akan segera tersedia')}
+                    className="bg-green-700 hover:bg-green-800 text-white p-4 rounded-xl shadow-md transition flex items-center justify-center gap-3"
+                >
                     <i className="fas fa-cog text-2xl"></i>
                     <span className="font-semibold">Pengaturan</span>
                 </button>

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { FaWhatsapp, FaTimes, FaUser, FaPhone, FaPaperPlane, FaComments, FaRobot } from 'react-icons/fa';
+import { saveChatMessage } from '../../services/chatService';
 
 // Helper function to format message text
 const formatMessage = (text) => {
@@ -180,26 +181,44 @@ export default function FloatingChatBubble() {
         };
 
         setMessages(prev => [...prev, userMessage]);
+        const currentMessage = inputMessage;
         setInputMessage('');
         setIsSending(true);
 
         try {
             // Send to n8n webhook
-            const response = await sendMessageToN8N(inputMessage);
+            const response = await sendMessageToN8N(currentMessage);
 
             // Debug: Log response dari n8n
             console.log('Response dari n8n:', response);
             console.log('response.message:', response.message);
             console.log('response.reply:', response.reply);
 
+            const botResponseText = response.message || response.reply || response.output || JSON.stringify(response) || 'Terima kasih atas pesan Anda. Admin akan segera merespons.';
+
             // Add bot response
             const botMessage = {
                 type: 'bot',
-                text: response.message || response.reply || response.output || JSON.stringify(response) || 'Terima kasih atas pesan Anda. Admin akan segera merespons.',
+                text: botResponseText,
                 timestamp: new Date().toISOString()
             };
 
             setMessages(prev => [...prev, botMessage]);
+
+            // Save to Supabase
+            try {
+                await saveChatMessage({
+                    nama: formData.nama,
+                    email: null,
+                    telepon: formData.nomorWA,
+                    pesan: currentMessage,
+                    n8n_response: botResponseText
+                });
+                console.log('Chat message saved to Supabase');
+            } catch (dbError) {
+                console.error('Error saving to database:', dbError);
+                // Don't show error to user, just log it
+            }
         } catch (error) {
             // Add error message
             const errorMessage = {

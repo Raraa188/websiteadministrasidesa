@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { createSurat } from "../../services/suratService";
+import { supabase } from "../../config/supabaseClient";
 
 /* ----------------------------------------------
     DATA PERSYARATAN SURAT
@@ -94,6 +96,8 @@ const UPLOAD_SURAT_LIST = [
 export default function FormSurat({ jenis, onBack }) {
   const [files, setFiles] = useState({});
   const [kkType, setKkType] = useState("Baru");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState("");
   const [additionalFields, setAdditionalFields] = useState({
     nama: "",
     nomorTelepon: "",
@@ -152,7 +156,28 @@ export default function FormSurat({ jenis, onBack }) {
       HANDLER INPUT
   ---------------------------------------------- */
   const handleFileChange = (e, key) => {
-    setFiles({ ...files, [key]: e.target.files[0] });
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('❌ Tipe file tidak didukung!\n\nHanya file PDF, JPG, JPEG, dan PNG yang diperbolehkan.');
+      e.target.value = ''; // Reset input
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+      alert(`❌ Ukuran file terlalu besar!\n\nFile: ${file.name}\nUkuran: ${(file.size / 1024 / 1024).toFixed(2)} MB\n\nMaksimal ukuran file adalah 5 MB.`);
+      e.target.value = ''; // Reset input
+      return;
+    }
+
+    // File valid, save to state
+    setFiles({ ...files, [key]: file });
   };
 
   const handleAdditionalFieldChange = (e) => {
@@ -162,28 +187,123 @@ export default function FormSurat({ jenis, onBack }) {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!e.currentTarget.reportValidity()) return;
 
-    const data = {
-      jenisSurat: titleMap[jenis],
-      files: files,
-      tambahan: additionalFields
-    };
+    setIsSubmitting(true);
+    setUploadProgress("Mempersiapkan data...");
 
-    console.log("DATA TERKIRIM:", data);
-    alert(`Permohonan ${titleMap[jenis]} berhasil dikirim!`);
+    try {
+      // 1. Upload files to Supabase Storage first
+      const uploadedFiles = {};
+      const fileEntries = Object.entries(files).filter(([_, file]) => file);
 
-    setFiles({});
-    setAdditionalFields({
-      nama: "",
-      nomorTelepon: "",
-      namaUsaha: "",
-      alamatTujuan: ""
-    });
+      if (fileEntries.length > 0) {
+        setUploadProgress(`Mengupload ${fileEntries.length} file...`);
+
+        for (let i = 0; i < fileEntries.length; i++) {
+          const [key, file] = fileEntries[i];
+
+          // Generate unique filename
+          const timestamp = Date.now();
+          const randomStr = Math.random().toString(36).substring(7);
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${timestamp}_${randomStr}.${fileExt}`;
+          const sanitizedName = additionalFields.nama.replace(/[^a-zA-Z0-9]/g, '_');
+          const filePath = `${sanitizedName}/${fileName}`;
+
+          setUploadProgress(`Mengupload file ${i + 1}/${fileEntries.length}: ${file.name}...`);
+
+          // Upload to Supabase Storage
+          const { data, error } = await supabase.storage
+            .from('pengajuan-surat-files')
+            .upload(filePath, file, {
+              cacheControl: '3600',
+              upsert: false
+            });
+
+          if (error) {
+            console.error('Error uploading file:', error);
+            throw new Error(`Gagal upload ${file.name}: ${error.message}`);
+          }
+
+          // Get public URL
+          const { data: urlData } = supabase.storage
+            .from('pengajuan-surat-files')
+            .getPublicUrl(filePath);
+
+          uploadedFiles[key] = {
+            name: file.name,
+            path: filePath,
+            url: urlData.publicUrl,
+            size: file.size,
+            type: file.type
+          };
+        }
+      }
+
+      // 2. Prepare data untuk Supabase
+      setUploadProgress("Menyimpan data ke database...");
+
+      const suratData = {
+        nama: additionalFields.nama,
+        nomor_telepon: additionalFields.nomorTelepon,
+        jenis_surat: titleMap[jenis],
+        status: 'pending'
+      };
+
+      // Add optional fields based on jenis surat
+      if (jenis === "usaha" && additionalFields.namaUsaha) {
+        suratData.nama_usaha = additionalFields.namaUsaha;
+      }
+
+      if ((jenis === "datang" || jenis === "keluar") && additionalFields.alamatTujuan) {
+        suratData.alamat_tujuan = additionalFields.alamatTujuan;
+      }
+
+      if (jenis === "kk") {
+        suratData.jenis_kk = kkType;
+      }
+
+      // Store uploaded files info
+      if (Object.keys(uploadedFiles).length > 0) {
+        suratData.files_uploaded = uploadedFiles;
+      }
+
+      // 3. Save to Supabase database
+      const { data, error } = await createSurat(suratData);
+
+      if (error) {
+        throw error;
+      }
+
+      console.log("DATA TERSIMPAN KE SUPABASE:", data);
+      alert(`✅ Permohonan ${titleMap[jenis]} berhasil dikirim!\n\nNomor Pengajuan: ${data.id.substring(0, 8).toUpperCase()}\n\nFile berhasil di-upload: ${Object.keys(uploadedFiles).length} file\n\nSilakan tunggu konfirmasi dari admin.`);
+
+      // Reset form
+      setFiles({});
+      setAdditionalFields({
+        nama: "",
+        nomorTelepon: "",
+        namaUsaha: "",
+        alamatTujuan: ""
+      });
+      setUploadProgress("");
+
+      // Kembali ke daftar surat
+      if (onBack) onBack();
+
+    } catch (error) {
+      console.error("Error menyimpan data:", error);
+      alert("❌ Gagal mengirim permohonan. Silakan coba lagi.\n\nError: " + (error.message || "Unknown error"));
+      setUploadProgress("");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
 
   /* ----------------------------------------------
       VALIDASI JENIS SURAT
@@ -351,6 +471,7 @@ export default function FormSurat({ jenis, onBack }) {
               <input
                 type="file"
                 className="hidden"
+                accept=".pdf,.jpg,.jpeg,.png,image/jpeg,image/png,application/pdf"
                 disabled={req.startsWith("Catatan Khusus:")}
                 required={!req.startsWith("Catatan Khusus:")}
                 onChange={(e) => handleFileChange(e, req)}
@@ -360,15 +481,39 @@ export default function FormSurat({ jenis, onBack }) {
             <p className="text-xs text-gray-500 mt-1">
               {files[req] ? `✓ ${files[req].name}` : "Belum ada file"}
             </p>
+            <p className="text-xs text-gray-400 mt-1">
+              <i className="fas fa-info-circle"></i> Format: PDF, JPG, JPEG, PNG (Max 5MB)
+            </p>
           </div>
         ))}
+
+        {/* UPLOAD PROGRESS */}
+        {uploadProgress && (
+          <div className="p-3 bg-blue-50 border border-blue-300 rounded-lg">
+            <p className="text-sm text-blue-800 flex items-center gap-2">
+              <i className="fas fa-spinner fa-spin"></i>
+              {uploadProgress}
+            </p>
+          </div>
+        )}
 
         {/* SUBMIT */}
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition"
+          disabled={isSubmitting}
+          className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
-          Submit Semua Dokumen
+          {isSubmitting ? (
+            <>
+              <i className="fas fa-spinner fa-spin"></i>
+              Mengirim...
+            </>
+          ) : (
+            <>
+              <i className="fas fa-paper-plane"></i>
+              Submit Semua Dokumen
+            </>
+          )}
         </button>
 
       </form>

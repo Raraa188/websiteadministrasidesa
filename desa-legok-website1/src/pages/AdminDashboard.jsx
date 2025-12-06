@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
 import AdminSidebar from "../components/admin/AdminSidebar";
 import DashboardBeranda from "../components/admin/DashboardBeranda";
 import TabelPengajuanSurat from "../components/admin/TabelPengajuanSurat";
@@ -7,15 +6,6 @@ import TabelLaporanPengaduan from "../components/admin/TabelLaporanPengaduan";
 
 export default function AdminDashboard() {
     const [activeSection, setActiveSection] = useState("beranda");
-    const navigate = useNavigate();
-
-    // Check authentication
-    useEffect(() => {
-        const isAuthenticated = localStorage.getItem("adminAuth");
-        if (isAuthenticated !== "true") {
-            navigate("/admin/login");
-        }
-    }, [navigate]);
 
     return (
         <div className="flex h-screen overflow-hidden bg-gray-100">

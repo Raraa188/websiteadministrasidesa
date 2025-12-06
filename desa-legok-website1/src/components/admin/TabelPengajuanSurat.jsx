@@ -1,53 +1,157 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { getAllSurat, updateSuratStatus } from "../../services/suratService";
 
 export default function TabelPengajuanSurat() {
     const [searchTerm, setSearchTerm] = useState("");
     const [filterStatus, setFilterStatus] = useState("all");
     const [currentPage, setCurrentPage] = useState(1);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [suratData, setSuratData] = useState([]);
+    const [totalCount, setTotalCount] = useState(0);
     const itemsPerPage = 10;
 
-    // Sample data
-    const sampleData = [
-        { id: 1, nama: "Ahmad Fauzi", telepon: "081234567890", jenisSurat: "Surat Keterangan Usaha", tanggal: "2025-12-01", status: "pending" },
-        { id: 2, nama: "Siti Nurhaliza", telepon: "081234567891", jenisSurat: "KTP", tanggal: "2025-12-01", status: "diproses" },
-        { id: 3, nama: "Budi Santoso", telepon: "081234567892", jenisSurat: "Kartu Keluarga", tanggal: "2025-12-02", status: "selesai" },
-        { id: 4, nama: "Dewi Lestari", telepon: "081234567893", jenisSurat: "Akta Kelahiran", tanggal: "2025-12-02", status: "pending" },
-        { id: 5, nama: "Rina Wijaya", telepon: "081234567894", jenisSurat: "SKTM", tanggal: "2025-12-02", status: "diproses" },
-        { id: 6, nama: "Joko Widodo", telepon: "081234567895", jenisSurat: "Surat Keterangan Domisili", tanggal: "2025-12-03", status: "selesai" },
-        { id: 7, nama: "Mega Wati", telepon: "081234567896", jenisSurat: "Surat Pengantar Pindah", tanggal: "2025-12-03", status: "pending" },
-        { id: 8, nama: "Prabowo Subianto", telepon: "081234567897", jenisSurat: "KIA", tanggal: "2025-12-03", status: "diproses" },
-        { id: 9, nama: "Anies Baswedan", telepon: "081234567898", jenisSurat: "Akta Kematian", tanggal: "2025-12-03", status: "selesai" },
-        { id: 10, nama: "Ganjar Pranowo", telepon: "081234567899", jenisSurat: "KTP", tanggal: "2025-12-03", status: "pending" },
-        { id: 11, nama: "Ridwan Kamil", telepon: "081234567800", jenisSurat: "Kartu Keluarga", tanggal: "2025-12-03", status: "diproses" },
-        { id: 12, nama: "Tri Rismaharini", telepon: "081234567801", jenisSurat: "SKTM", tanggal: "2025-12-03", status: "selesai" }
-    ];
+    // Fetch data from Supabase
+    useEffect(() => {
+        fetchSuratData();
+    }, [currentPage, filterStatus, searchTerm]);
 
-    // Filter and search
-    const filteredData = sampleData.filter(item => {
-        const matchesSearch = item.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.jenisSurat.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus = filterStatus === "all" || item.status === filterStatus;
-        return matchesSearch && matchesStatus;
-    });
+    const fetchSuratData = async () => {
+        setLoading(true);
+        setError(null);
+
+        const filters = {
+            status: filterStatus,
+            search: searchTerm
+        };
+
+        const { data, count, error: fetchError } = await getAllSurat(filters, currentPage, itemsPerPage);
+
+        if (fetchError) {
+            setError("Gagal memuat data. Silakan coba lagi.");
+            console.error(fetchError);
+        } else {
+            setSuratData(data || []);
+            setTotalCount(count || 0);
+        }
+
+        setLoading(false);
+    };
+
+    // Filter and search (now done on server side, but keep for local display)
+    const filteredData = suratData;
 
     // Pagination
-    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const paginatedData = filteredData.slice(startIndex, startIndex + itemsPerPage);
+    const totalPages = Math.ceil(totalCount / itemsPerPage);
+    const paginatedData = filteredData;
 
     const getStatusBadge = (status) => {
         const badges = {
             pending: { label: "Pending", color: "bg-yellow-100 text-yellow-800 border-yellow-300" },
-            diproses: { label: "Diproses", color: "bg-green-100 text-green-800 border-green-300" },
-            selesai: { label: "Selesai", color: "bg-green-100 text-green-800 border-green-300" }
+            diproses: { label: "Diproses", color: "bg-blue-100 text-blue-800 border-blue-300" },
+            selesai: { label: "Selesai", color: "bg-green-100 text-green-800 border-green-300" },
+            ditolak: { label: "Ditolak", color: "bg-red-100 text-red-800 border-red-300" }
         };
         return badges[status] || badges.pending;
     };
 
-    const handleStatusChange = (id, newStatus) => {
-        console.log(`Changing status of ID ${id} to ${newStatus}`);
-        alert(`Status pengajuan #${id} diubah menjadi: ${newStatus}`);
+    const handleStatusChange = async (id, newStatus) => {
+        const confirmed = window.confirm(`Ubah status pengajuan menjadi: ${newStatus}?`);
+        if (!confirmed) return;
+
+        const { data, error: updateError } = await updateSuratStatus(id, newStatus);
+
+        if (updateError) {
+            alert("Gagal mengubah status. Silakan coba lagi.");
+            console.error(updateError);
+        } else {
+            alert(`Status pengajuan berhasil diubah menjadi: ${newStatus}`);
+            // Refresh data
+            fetchSuratData();
+        }
     };
+
+    const formatDate = (dateString) => {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('id-ID', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+    };
+
+    const handleDownloadFiles = (item) => {
+        if (!item.files_uploaded || Object.keys(item.files_uploaded).length === 0) {
+            alert('Tidak ada file yang di-upload untuk pengajuan ini.');
+            return;
+        }
+
+        // Create modal content with file list
+        const filesInfo = item.files_uploaded;
+        const filesList = Object.entries(filesInfo).map(([key, fileData]) => {
+            return `${key}: ${fileData.name}`;
+        }).join('\n');
+
+        const confirmed = window.confirm(
+            `File yang tersedia untuk didownload:\n\n${filesList}\n\n` +
+            `Total: ${Object.keys(filesInfo).length} file\n\n` +
+            `Klik OK untuk membuka semua file di tab baru.\n\n` +
+            `⚠️ PENTING: Izinkan pop-up di browser Anda!`
+        );
+
+        if (confirmed) {
+            // Open files sequentially with delay to prevent popup blocker
+            const fileEntries = Object.entries(filesInfo);
+
+            fileEntries.forEach(([key, fileData], index) => {
+                if (fileData.url) {
+                    // Add delay between each file to prevent popup blocker
+                    setTimeout(() => {
+                        window.open(fileData.url, '_blank');
+                    }, index * 300); // 300ms delay between each file
+                }
+            });
+
+            // Show success message
+            setTimeout(() => {
+                alert(`✅ Membuka ${fileEntries.length} file...\n\nJika ada file yang tidak terbuka, pastikan pop-up tidak diblokir oleh browser.`);
+            }, fileEntries.length * 300 + 500);
+        }
+    };
+
+    const handleViewDetail = (item) => {
+        let detailText = `Detail Pengajuan:\n\n`;
+        detailText += `Nama: ${item.nama}\n`;
+        detailText += `Telepon: ${item.nomor_telepon}\n`;
+        detailText += `Jenis Surat: ${item.jenis_surat}\n`;
+
+        if (item.nama_usaha) {
+            detailText += `Nama Usaha: ${item.nama_usaha}\n`;
+        }
+        if (item.alamat_tujuan) {
+            detailText += `Alamat Tujuan: ${item.alamat_tujuan}\n`;
+        }
+        if (item.jenis_kk) {
+            detailText += `Jenis KK: ${item.jenis_kk}\n`;
+        }
+
+        detailText += `Status: ${item.status}\n`;
+        detailText += `Tanggal: ${formatDate(item.tanggal_pengajuan)}\n`;
+
+        // Add files info
+        if (item.files_uploaded && Object.keys(item.files_uploaded).length > 0) {
+            detailText += `\nFile yang di-upload:\n`;
+            Object.entries(item.files_uploaded).forEach(([key, fileData]) => {
+                detailText += `- ${key}: ${fileData.name}\n`;
+            });
+        } else {
+            detailText += `\nTidak ada file yang di-upload.`;
+        }
+
+        alert(detailText);
+    };
+
 
     return (
         <div className="space-y-6">
@@ -63,6 +167,14 @@ export default function TabelPengajuanSurat() {
 
             {/* Filters and Search */}
             <div className="bg-white rounded-xl shadow-md p-6">
+                {/* Error Message */}
+                {error && (
+                    <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-center gap-2">
+                        <i className="fas fa-exclamation-circle"></i>
+                        <span className="text-sm">{error}</span>
+                    </div>
+                )}
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
                     {/* Search */}
@@ -93,13 +205,18 @@ export default function TabelPengajuanSurat() {
                             <option value="pending">Pending</option>
                             <option value="diproses">Diproses</option>
                             <option value="selesai">Selesai</option>
+                            <option value="ditolak">Ditolak</option>
                         </select>
                     </div>
                 </div>
 
                 {/* Results Count */}
                 <div className="mt-4 text-sm text-gray-600">
-                    Menampilkan <span className="font-semibold">{paginatedData.length}</span> dari <span className="font-semibold">{filteredData.length}</span> pengajuan
+                    {loading ? (
+                        <span>Memuat data...</span>
+                    ) : (
+                        <>Menampilkan <span className="font-semibold">{paginatedData.length}</span> dari <span className="font-semibold">{totalCount}</span> pengajuan</>
+                    )}
                 </div>
             </div>
 
@@ -119,19 +236,26 @@ export default function TabelPengajuanSurat() {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-200">
-                            {paginatedData.length > 0 ? (
+                            {loading ? (
+                                <tr>
+                                    <td colSpan="7" className="px-6 py-8 text-center text-gray-500">
+                                        <i className="fas fa-spinner fa-spin text-4xl mb-2 block text-[var(--desa-main)]"></i>
+                                        Memuat data...
+                                    </td>
+                                </tr>
+                            ) : paginatedData.length > 0 ? (
                                 paginatedData.map((item, idx) => (
                                     <tr key={item.id} className="hover:bg-gray-50 transition">
-                                        <td className="px-6 py-4 text-sm text-gray-700">{startIndex + idx + 1}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-700">{(currentPage - 1) * itemsPerPage + idx + 1}</td>
                                         <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.nama}</td>
                                         <td className="px-6 py-4 text-sm text-gray-700">
                                             <i className="fas fa-phone mr-2 text-[var(--desa-main)]"></i>
-                                            {item.telepon}
+                                            {item.nomor_telepon}
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-gray-700">{item.jenisSurat}</td>
+                                        <td className="px-6 py-4 text-sm text-gray-700">{item.jenis_surat}</td>
                                         <td className="px-6 py-4 text-sm text-gray-700">
                                             <i className="fas fa-calendar mr-2 text-gray-400"></i>
-                                            {item.tanggal}
+                                            {formatDate(item.tanggal_pengajuan)}
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusBadge(item.status).color}`}>
@@ -141,7 +265,7 @@ export default function TabelPengajuanSurat() {
                                         <td className="px-6 py-4">
                                             <div className="flex gap-2">
                                                 <button
-                                                    onClick={() => alert(`Melihat detail pengajuan #${item.id}`)}
+                                                    onClick={() => handleViewDetail(item)}
                                                     className="px-3 py-1 bg-[var(--desa-main)] hover:bg-green-700 text-white text-xs rounded-lg transition"
                                                     title="Lihat Detail"
                                                 >
@@ -156,11 +280,13 @@ export default function TabelPengajuanSurat() {
                                                     <option value="pending">Pending</option>
                                                     <option value="diproses">Diproses</option>
                                                     <option value="selesai">Selesai</option>
+                                                    <option value="ditolak">Ditolak</option>
                                                 </select>
                                                 <button
-                                                    onClick={() => alert(`Download dokumen #${item.id}`)}
-                                                    className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-xs rounded-lg transition"
-                                                    title="Download"
+                                                    onClick={() => handleDownloadFiles(item)}
+                                                    className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded-lg transition"
+                                                    title="Download File"
+                                                    disabled={!item.files_uploaded || Object.keys(item.files_uploaded).length === 0}
                                                 >
                                                     <i className="fas fa-download"></i>
                                                 </button>
