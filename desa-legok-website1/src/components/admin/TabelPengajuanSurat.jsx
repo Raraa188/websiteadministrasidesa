@@ -248,9 +248,17 @@ export default function TabelPengajuanSurat() {
                                     <tr key={item.id} className="hover:bg-gray-50 transition">
                                         <td className="px-6 py-4 text-sm text-gray-700">{(currentPage - 1) * itemsPerPage + idx + 1}</td>
                                         <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.nama}</td>
-                                        <td className="px-6 py-4 text-sm text-gray-700">
-                                            <i className="fas fa-phone mr-2 text-[var(--desa-main)]"></i>
-                                            {item.nomor_telepon}
+                                        <td className="px-6 py-4 text-sm">
+                                            <a
+                                                href={`https://wa.me/${item.nomor_telepon.replace(/^0/, '62').replace(/\D/g, '')}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-[var(--desa-main)] hover:text-green-700 hover:underline flex items-center gap-1"
+                                                title="Hubungi via WhatsApp"
+                                            >
+                                                <i className="fab fa-whatsapp"></i>
+                                                {item.nomor_telepon}
+                                            </a>
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-700">{item.jenis_surat}</td>
                                         <td className="px-6 py-4 text-sm text-gray-700">

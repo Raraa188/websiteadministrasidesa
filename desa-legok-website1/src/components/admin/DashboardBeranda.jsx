@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { getSuratStats } from "../../services/suratService";
-import { getPengaduanStats } from "../../services/pengaduanService";
+import { getSuratStats, getAllSurat } from "../../services/suratService";
+import { getPengaduanStats, getAllPengaduan } from "../../services/pengaduanService";
+import * as XLSX from 'xlsx';
 
 export default function DashboardBeranda() {
     const [suratStats, setSuratStats] = useState(null);
@@ -30,6 +31,100 @@ export default function DashboardBeranda() {
             console.error("Error fetching stats:", error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleExportSurat = async () => {
+        try {
+            const confirmed = window.confirm('Apakah Anda yakin ingin mengekspor data Pengajuan Surat ke Excel?');
+            if (!confirmed) return;
+
+            // Fetch all surat data without pagination
+            const { data: suratData } = await getAllSurat({}, 1, 10000);
+
+            if (!suratData || suratData.length === 0) {
+                alert('⚠️ Tidak ada data Pengajuan Surat untuk diekspor.');
+                return;
+            }
+
+            // Prepare Surat data for Excel
+            const suratExcelData = suratData.map((item, index) => ({
+                'No': index + 1,
+                'Nama Pengaju': item.nama,
+                'Nomor Telepon': item.nomor_telepon,
+                'Jenis Surat': item.jenis_surat,
+                'Nama Usaha': item.nama_usaha || '-',
+                'Alamat Tujuan': item.alamat_tujuan || '-',
+                'Jenis KK': item.jenis_kk || '-',
+                'Status': item.status,
+                'Tanggal Pengajuan': new Date(item.tanggal_pengajuan).toLocaleDateString('id-ID')
+            }));
+
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(suratExcelData);
+            XLSX.utils.book_append_sheet(wb, ws, 'Pengajuan Surat');
+
+            // Generate filename with current date
+            const date = new Date().toISOString().split('T')[0];
+            const filename = `Pengajuan_Surat_${date}.xlsx`;
+
+            // Save file
+            XLSX.writeFile(wb, filename);
+
+            alert(`✅ Data Pengajuan Surat berhasil diekspor! (${suratData.length} data)`);
+        } catch (error) {
+            console.error('Error exporting Surat to Excel:', error);
+            alert('❌ Gagal mengekspor data. Silakan coba lagi.');
+        }
+    };
+
+    const handleExportPengaduan = async () => {
+        try {
+            const confirmed = window.confirm('Apakah Anda yakin ingin mengekspor data Laporan Pengaduan ke Excel?');
+            if (!confirmed) return;
+
+            // Fetch all pengaduan data without pagination
+            const { data: pengaduanData } = await getAllPengaduan({}, 1, 10000);
+
+            if (!pengaduanData || pengaduanData.length === 0) {
+                alert('⚠️ Tidak ada data Laporan Pengaduan untuk diekspor.');
+                return;
+            }
+
+            // Prepare Pengaduan data for Excel
+            const pengaduanExcelData = pengaduanData.map((item, index) => ({
+                'No': index + 1,
+                'Nama Pelapor': item.nama,
+                'NIK': item.nik || '-',
+                'Telepon': item.telepon,
+                'Email': item.email || '-',
+                'Kategori': item.kategori,
+                'Judul': item.judul,
+                'Deskripsi': item.deskripsi,
+                'Lokasi': item.lokasi || '-',
+                'Status': item.status,
+                'Prioritas': item.prioritas,
+                'Tanggal Laporan': new Date(item.tanggal_laporan).toLocaleDateString('id-ID'),
+                'Tanggapan Admin': item.tanggapan_admin || '-'
+            }));
+
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(pengaduanExcelData);
+            XLSX.utils.book_append_sheet(wb, ws, 'Laporan Pengaduan');
+
+            // Generate filename with current date
+            const date = new Date().toISOString().split('T')[0];
+            const filename = `Laporan_Pengaduan_${date}.xlsx`;
+
+            // Save file
+            XLSX.writeFile(wb, filename);
+
+            alert(`✅ Data Laporan Pengaduan berhasil diekspor! (${pengaduanData.length} data)`);
+        } catch (error) {
+            console.error('Error exporting Pengaduan to Excel:', error);
+            alert('❌ Gagal mengekspor data. Silakan coba lagi.');
         }
     };
 
@@ -256,18 +351,18 @@ export default function DashboardBeranda() {
                     <span className="font-semibold">Refresh Data</span>
                 </button>
                 <button
-                    onClick={() => alert('Fitur export akan segera tersedia')}
-                    className="bg-green-600 hover:bg-green-700 text-white p-4 rounded-xl shadow-md transition flex items-center justify-center gap-3"
+                    onClick={handleExportSurat}
+                    className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-xl shadow-md transition flex items-center justify-center gap-3"
                 >
-                    <i className="fas fa-download text-2xl"></i>
-                    <span className="font-semibold">Export Laporan</span>
+                    <i className="fas fa-file-excel text-2xl"></i>
+                    <span className="font-semibold">Export Pengajuan Surat</span>
                 </button>
                 <button
-                    onClick={() => alert('Pengaturan akan segera tersedia')}
-                    className="bg-green-700 hover:bg-green-800 text-white p-4 rounded-xl shadow-md transition flex items-center justify-center gap-3"
+                    onClick={handleExportPengaduan}
+                    className="bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-xl shadow-md transition flex items-center justify-center gap-3"
                 >
-                    <i className="fas fa-cog text-2xl"></i>
-                    <span className="font-semibold">Pengaturan</span>
+                    <i className="fas fa-file-excel text-2xl"></i>
+                    <span className="font-semibold">Export Laporan Pengaduan</span>
                 </button>
             </div>
         </div>
